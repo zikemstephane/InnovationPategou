@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'authentication',
     'vehicule',
+    'course',
 ]
 
 AUTH_USER_MODEL = 'authentication.Utilisateur'
