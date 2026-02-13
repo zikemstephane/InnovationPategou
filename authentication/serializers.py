@@ -127,7 +127,7 @@ class VerifyOTPSerializer(serializers.Serializer):
         
         # Génération des tokens JWT
         refresh = RefreshToken.for_user(user)
-        
+        print(f"--- DEBUG --- Génération JWT pour {user.email} : refresh={refresh}, access={refresh.access_token}")
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -139,3 +139,16 @@ class VerifyOTPSerializer(serializers.Serializer):
                 'prenom': user.prenom
             }
         }
+        
+        
+# ... à la fin de votre fichier serializers.py ...
+
+class UtilisateurSerializer(serializers.ModelSerializer):
+    """
+    Serializer pour afficher et modifier le profil.
+    L'email et le rôle sont en lecture seule (read_only) pour des raisons de sécurité.
+    """
+    class Meta:
+        model = Utilisateur
+        fields = ('id', 'email', 'nom', 'prenom', 'telephone', 'role', 'photo', 'date_creation')
+        read_only_fields = ('id', 'email', 'role', 'date_creation')
