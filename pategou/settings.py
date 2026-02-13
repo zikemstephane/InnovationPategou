@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'authentication',
     'vehicule',
     'course',
+    'Avis',
 ]
 
 AUTH_USER_MODEL = 'authentication.Utilisateur'
