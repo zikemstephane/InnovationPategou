@@ -39,26 +39,34 @@ def verify_otp_view(request):
 
 
 
-@api_view(['GET', 'PATCH'])
-@permission_classes([IsAuthenticated]) # Nécessite le Token JWT
+@api_view(['GET', 'PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated]) 
 def profile_view(request):
     """
-    GET : Consulter son propre profil.
-    PATCH : Modifier son propre profil (nom, prenom, telephone, photo).
+    GET : Consulter son profil.
+    PATCH : Modifier son profil.
+    DELETE : Supprimer son compte.
     """
-    user = request.user # L'utilisateur connecté grâce au Token
+    user = request.user
 
+    # 1. CONSULTATION (GET)
     if request.method == 'GET':
-        # On sérialise l'utilisateur pour l'afficher
         serializer = UtilisateurSerializer(user)
         return Response(serializer.data)
 
+    # 2. MODIFICATION (PATCH)
     elif request.method == 'PATCH':
-        # partial=True permet de ne mettre à jour que les champs fournis
         serializer = UtilisateurSerializer(user, data=request.data, partial=True)
         
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         
+        # Si les données ne sont pas valides, on renvoie l'erreur ICI
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # 3. SUPPRESSION (DELETE)
+    elif request.method == 'DELETE':
+        user.delete()
+        # Le code 204 No Content signifie que la suppression a réussi mais qu'il n'y a rien à retourner
+        return Response(status=status.HTTP_204_NO_CONTENT)
