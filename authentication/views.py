@@ -34,8 +34,10 @@ def verify_otp_view(request):
     """
     serializer = VerifyOTPSerializer(data=request.data)
     if serializer.is_valid():
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = serializer.save()  # Appelle create() et récupère tokens
+        return Response(data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
