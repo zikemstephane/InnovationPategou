@@ -1,0 +1,180 @@
+<!-- settings.page.html -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Paramètres</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="settings-content">
+  <!-- En-tête du profil -->
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <img [src]="user?.photo || 'assets/icon/default-avatar.svg'" alt="Profile">
+      <ion-button class="edit-avatar" size="small" fill="clear" (click)="changePhoto()">
+        <ion-icon name="camera-outline"></ion-icon>
+      </ion-button>
+    </div>
+    <h2>{{ user?.name || 'Utilisateur' }}</h2>
+    <p class="user-role">{{ user?.role === 'chauffeur' ? 'Chauffeur' : 'Client' }}</p>
+    <p class="user-email">{{ user?.email }}</p>
+  </div>
+
+  <!-- Section Préférences de langue -->
+  <div class="settings-section">
+    <h3 class="section-title">
+      <ion-icon name="language-outline"></ion-icon>
+      Langue & Région
+    </h3>
+
+    <ion-list class="settings-list">
+      <!-- Langue de l'application -->
+      <ion-item class="settings-item" button (click)="selectLanguage()">
+        <ion-icon name="globe-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Langue de l'application</h2>
+          <p class="item-value">{{ currentLanguage?.name || 'Français' }}</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+
+      <!-- Format de la devise -->
+      <ion-item class="settings-item" button (click)="selectCurrency()">
+        <ion-icon name="cash-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Devise</h2>
+          <p class="item-value">{{ currentCurrency || 'XOF (CFA)' }}</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+
+      <!-- Format de la date -->
+      <ion-item class="settings-item" button (click)="selectDateFormat()">
+        <ion-icon name="calendar-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Format de la date</h2>
+          <p class="item-value">{{ currentDateFormat || 'DD/MM/YYYY' }}</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Section Notifications -->
+  <div class="settings-section">
+    <h3 class="section-title">
+      <ion-icon name="notifications-outline"></ion-icon>
+      Notifications
+    </h3>
+
+    <ion-list class="settings-list">
+      <ion-item class="settings-item" *ngIf="user?.role === 'chauffeur'">
+        <ion-icon name="car-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Nouvelles courses</h2>
+          <p>Notifications push pour les nouvelles demandes</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="settings.newRideNotifications" color="primary"></ion-toggle>
+      </ion-item>
+
+      <ion-item class="settings-item">
+        <ion-icon name="chatbubble-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Messages</h2>
+          <p>Notifications des messages</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="settings.messageNotifications" color="primary"></ion-toggle>
+      </ion-item>
+
+      <ion-item class="settings-item">
+        <ion-icon name="megaphone-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Promotions</h2>
+          <p>Offres et actualités</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="settings.promotionNotifications" color="primary"></ion-toggle>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Section Confidentialité & Sécurité -->
+  <div class="settings-section">
+    <h3 class="section-title">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      Confidentialité & Sécurité
+    </h3>
+
+    <ion-list class="settings-list">
+      <ion-item class="settings-item" button (click)="changePassword()">
+        <ion-icon name="key-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Changer le mot de passe</h2>
+          <p>Modifier votre mot de passe</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+
+      <ion-item class="settings-item" button (click)="managePrivacy()">
+        <ion-icon name="eye-off-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Confidentialité</h2>
+          <p>Gérer vos données personnelles</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+
+      <ion-item class="settings-item" button (click)="manageDevices()">
+        <ion-icon name="phone-portrait-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Appareils connectés</h2>
+          <p>Gérer vos sessions</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Section À propos -->
+  <div class="settings-section">
+    <h3 class="section-title">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      À propos
+    </h3>
+
+    <ion-list class="settings-list">
+      <ion-item class="settings-item" button (click)="openTerms()">
+        <ion-icon name="document-text-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Conditions d'utilisation</h2>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+
+      <ion-item class="settings-item" button (click)="openPrivacyPolicy()">
+        <ion-icon name="shield-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Politique de confidentialité</h2>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" class="chevron"></ion-icon>
+      </ion-item>
+
+      <ion-item class="settings-item">
+        <ion-icon name="cube-outline" slot="start" class="item-icon"></ion-icon>
+        <ion-label>
+          <h2>Version</h2>
+          <p class="item-value">1.0.0</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Bouton de déconnexion -->
+  <div class="logout-section">
+    <ion-button expand="block" fill="clear" class="logout-button" (click)="logout()">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
+      Se déconnecter
+    </ion-button>
+  </div>
+</ion-content>

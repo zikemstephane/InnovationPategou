@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login" color="primary"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="text-primary font-bold">Vérification</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="twofa-container">
+  <div class="twofa-content">
+    <!-- Illustration -->
+    <div class="illustration-section">
+      <div class="illustration-circle">
+        <ion-icon name="shield-checkmark-outline" class="illustration-icon"></ion-icon>
+      </div>
+      <h1 class="page-title">Vérification en deux étapes</h1>
+      <!-- Afficher l'email de l'utilisateur -->
+      <p class="page-subtitle">
+        Entrez le code à 6 chiffres envoyé à 
+        <strong>{{ user?.email || userEmail }}</strong>
+      </p>
+    </div>
+    
+    <!-- Formulaire de vérification -->
+    <div class="form-section">
+      <form [formGroup]="twoFAForm" (ngSubmit)="verify()">
+        <div class="code-inputs">
+          <ion-input 
+            *ngFor="let input of codeInputs; let i = index"
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            class="code-input"
+            [formControlName]="input"
+            (ionInput)="onCodeInput($event, i)"
+            (ionFocus)="onInputFocus(i)"
+            #codeInput>
+          </ion-input>
+        </div>
+        
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+        
+        <ion-button 
+          type="submit" 
+          expand="block" 
+          class="verify-button"
+          [disabled]="twoFAForm.invalid || isSubmitting">
+          <ion-spinner *ngIf="isSubmitting" name="crescent" slot="start"></ion-spinner>
+          Vérifier
+        </ion-button>
+      </form>
+    </div>
+    
+    <!-- Options supplémentaires -->
+    <div class="options-section">
+      <div class="resend-code">
+        <p>Vous n'avez pas reçu le code ?</p>
+        <ion-button 
+          fill="clear" 
+          color="primary" 
+          (click)="resendCode()"
+          [disabled]="resendDisabled">
+          Renvoyer <span *ngIf="countdown > 0">({{ countdown }}s)</span>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

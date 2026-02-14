@@ -1,0 +1,201 @@
+/* HEADER */
+ion-header ion-toolbar {
+  --background: #ffffff;
+  --border-color: #f3f4f6;
+}
+
+ion-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #10b981;
+}
+
+/* CONTAINER */
+.login-container {
+  --background: #ffffff;
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  min-height: 100%;
+}
+
+/* LOGO */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.logo-icon {
+  font-size: 2.5rem;
+  color: #10b981;
+}
+
+.app-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.welcome-text {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* FORM */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.custom-input {
+  --background: #f9fafb;
+  --border-radius: 14px;
+  --border-color: #e5e7eb;
+  --highlight-height: 0;
+  margin-bottom: 0.5rem;
+}
+
+.custom-input.item-has-focus {
+  --border-color: #10b981;
+  --background: #ffffff;
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  margin-left: 1rem;
+}
+
+/* PRIMARY LOGIN BUTTON */
+.login-button {
+  --background: #10b981;
+  --color: #ffffff;
+  --border-radius: 14px;
+  --box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  font-weight: 600;
+  height: 54px;
+  margin-bottom: 1.5rem;
+}
+
+.login-button:active {
+  --background: #059669;
+}
+
+/* DIVIDER */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+/* SOCIAL BUTTONS */
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* GOOGLE STYLE */
+.social-button.google {
+  --background: #ffffff;
+  --color: #1f2937;
+  --border-color: #dadce0;
+  --border-radius: 14px;
+  height: 52px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* FACEBOOK STYLE */
+.social-button.facebook {
+  --background: #1877f2;
+  --color: #ffffff;
+  --border-radius: 14px;
+  height: 52px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+}
+
+.social-button.facebook ion-icon {
+  color: #ffffff;
+}
+
+/* SIGNUP LINK */
+.signup-link {
+  text-align: center;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.signup-link p {
+  color: #6b7280;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.signup-link ion-button {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .login-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .logo-circle {
+    width: 70px;
+    height: 70px;
+  }
+
+  .logo-icon {
+    font-size: 2.2rem;
+  }
+
+  .app-name {
+    font-size: 1.6rem;
+  }
+
+  .login-button,
+  .social-button {
+    height: 48px;
+  }
+}

@@ -1,0 +1,197 @@
+// --- Palettes de couleurs (valeurs codées en dur) ---
+ $primary-green: #10b981;
+ $primary-green-dark: #059669;
+ $primary-green-light: #34d399;
+ $white: #ffffff;
+ $gray-50: #f9fafb;
+ $gray-100: #f3f4f6;
+ $gray-200: #e5e7eb;
+ $gray-300: #d1d5db;
+ $gray-400: #9ca3af;
+ $gray-500: #6b7280;
+ $gray-600: #4b5563;
+ $gray-700: #374151;
+ $gray-800: #1f2937;
+ $error-red: #ef4444;
+ $warning-yellow: #f59e0b;
+ $info-blue: #3b82f6;
+ $success-green: #22c55e;
+
+.payments-page {
+  --background: #f9fafb;
+}
+
+// --- Carte Solde ---
+.wallet-card {
+  margin: 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, $primary-green 0%, $primary-green-dark 100%);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+  color: $white;
+  overflow: hidden;
+}
+
+ion-card-header {
+  --background: rgba(255, 255, 255, 0.1);
+  --color: $white;
+}
+
+ion-card-title {
+  --color: $white;
+  font-weight: 600;
+}
+
+.balance-display {
+  text-align: center;
+  padding: 24px;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+  }
+
+  .balance-updated {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    margin: 0;
+  }
+}
+
+// --- Section des Méthodes de Paiement ---
+.payment-methods-section, .transactions-section {
+  padding: 16px;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
+    }
+  }
+}
+
+ion-item {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --inner-padding-end: 0;
+  --padding-start: 16px;
+  --min-height: 80px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+ion-avatar {
+  --border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  --size: 48px;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: $primary-green;
+  }
+}
+
+ion-label {
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+  }
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+
+  .transaction-amount {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+// --- État vide et de chargement ---
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+  color: #9ca3af;
+
+  ion-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #6b7280;
+  }
+}
+
+.loading-methods {
+  padding: 16px;
+
+  ion-skeleton-text {
+    --border-radius: 8px;
+    margin-bottom: 16px;
+  }
+}
+
+// --- FAB ---
+ion-fab {
+  --background: $primary-green;
+  --color: $white;
+  --box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3), 0 4px 8px rgba(16, 185, 129, 0.15);
+  --border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+// --- Responsive pour mobile ---
+@media (max-width: 480px) {
+  .balance-display {
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .transaction-info {
+    .transaction-amount {
+      font-size: 0.9rem;
+    }
+  }
+}

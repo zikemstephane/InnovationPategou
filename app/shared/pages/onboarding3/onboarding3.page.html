@@ -1,0 +1,92 @@
+<ion-content class="onboarding-container">
+  <!-- Fond avec dégradé subtil -->
+  <div class="background-gradient"></div>
+  
+  <!-- Contenu principal -->
+  <div class="content-wrapper">
+    <!-- Illustration animée -->
+    <div class="illustration-container">
+      <div class="illustration-wrapper">
+        <svg width="280" height="220" viewBox="0 0 280 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="main-illustration">
+          <!-- Personnes formant une communauté -->
+          <circle cx="80" cy="100" r="20" fill="#10b981" opacity="0.9"/>
+          <path d="M80 120 C80 120, 70 140, 70 155 C70 165, 80 170, 90 170 L100 170 C110 170, 120 165, 120 155 C120 140, 110 120, 110 120 L80 120 Z" fill="#10b981" opacity="0.9"/>
+          
+          <circle cx="200" cy="100" r="20" fill="#10b981" opacity="0.9"/>
+          <path d="M200 120 C200 120, 190 140, 190 155 C190 165, 200 170, 210 170 L220 170 C230 170, 240 165, 240 155 C240 140, 230 120, 230 120 L200 120 Z" fill="#10b981" opacity="0.9"/>
+          
+          <circle cx="140" cy="80" r="20" fill="#10b981" opacity="0.9"/>
+          <path d="M140 100 C140 100, 130 120, 130 135 C130 145, 140 150, 150 150 L160 150 C170 150, 180 145, 180 135 C180 120, 170 100, 170 100 L140 100 Z" fill="#10b981" opacity="0.9"/>
+          
+          <!-- Cœurs et connexions -->
+          <path d="M100 110 Q140 90 180 110" stroke="#10b981" stroke-width="2" fill="none" opacity="0.5" stroke-dasharray="5,5">
+            <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+          </path>
+          
+          <path d="M120 130 Q140 110 160 130" stroke="#10b981" stroke-width="2" fill="none" opacity="0.5" stroke-dasharray="5,5">
+            <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+          </path>
+          
+          <!-- Symboles de communauté -->
+          <circle cx="140" cy="40" r="20" fill="#ffffff" opacity="0.9"/>
+          <path d="M130 40 L135 35 L145 35 L150 40 L145 45 L135 45 Z" fill="#10b981" opacity="0.8"/>
+          <circle cx="140" cy="40" r="15" fill="none" stroke="#10b981" stroke-width="2" opacity="0.8"/>
+          
+          <!-- Étoiles pour montrer la satisfaction -->
+          <g transform="translate(50, 50)">
+            <path d="M0,-8 L2.4,-2.4 L8,-0.8 L2.4,1.6 L0,8 L-2.4,1.6 L-8,-0.8 L-2.4,-2.4 Z" fill="#fbbf24" opacity="0.8">
+              <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>
+            </path>
+          </g>
+          
+          <g transform="translate(230, 50)">
+            <path d="M0,-8 L2.4,-2.4 L8,-0.8 L2.4,1.6 L0,8 L-2.4,1.6 L-8,-0.8 L-2.4,-2.4 Z" fill="#fbbf24" opacity="0.8">
+              <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>
+            </path>
+          </g>
+          
+          <!-- Points de suspension pour indiquer l'activité -->
+          <circle cx="130" cy="190" r="3" fill="#10b981" opacity="0.7">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="140" cy="190" r="3" fill="#10b981" opacity="0.7">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="150" cy="190" r="3" fill="#10b981" opacity="0.7">
+            <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Texte de l'onboarding -->
+    <div class="text-container">
+      <h1 class="title">Rejoignez le mouvement</h1>
+      <p class="subtitle">
+        Des milliers d'utilisateurs font déjà confiance à MoovCity pour leurs déplacements. Et vous, prêt(e) à bouger ?
+      </p>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="navigation-container">
+      <!-- Indicateur de progression -->
+      <div class="progress-indicator">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot active"></span>
+      </div>
+      
+      <!-- Boutons d'action -->
+      <div class="action-buttons">
+        <ion-button expand="block" (click)="start()" class="primary-button" >
+          S'inscrire
+          <ion-icon slot="end" name="person-add-outline"></ion-icon>
+        </ion-button>
+        <ion-button expand="block" fill="outline" (click)="login()" class="secondary-button">
+          Se connecter
+          <ion-icon slot="end" name="log-in-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

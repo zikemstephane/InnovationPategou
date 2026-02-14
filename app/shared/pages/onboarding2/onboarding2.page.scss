@@ -1,0 +1,239 @@
+:root {
+  --moov-primary: #10b981;
+  --moov-primary-dark: #059669;
+  --moov-primary-light: #34d399;
+  --moov-white: #ffffff;
+  --moov-gray-50: #f9fafb;
+  --moov-gray-100: #f3f4f6;
+  --moov-gray-200: #e5e7eb;
+  --moov-gray-300: #d1d5db;
+  --moov-gray-400: #9ca3af;
+  --moov-gray-500: #6b7280;
+  --moov-gray-600: #4b5563;
+  --moov-gray-700: #374151;
+  --moov-gray-800: #1f2937;
+  --moov-gray-900: #111827;
+}
+
+.onboarding-container {
+  --background: var(--moov-white);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.background-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 2rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.skip-button {
+  align-self: flex-end;
+  margin-bottom: 1rem;
+  
+  ion-button {
+    --color: #6b7280;
+    --ripple-color: #e5e7eb;
+  }
+}
+
+.illustration-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.illustration-wrapper {
+  position: relative;
+  animation: float 6s ease-in-out infinite;
+}
+
+.main-illustration {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 15px rgba(16, 185, 129, 0.1));
+}
+
+.text-container {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navigation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  animation: fadeIn 1s ease-out 0.3s both;
+}
+
+.progress-indicator {
+  display: flex;
+  gap: 0.5rem;
+  
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--moov-gray-300);
+    transition: all 0.3s ease;
+    
+    &.active {
+      background-color: #10b981;
+      width: 24px;
+      border-radius: 4px;
+    }
+  }
+}
+
+.next-button {
+  --background: #10b981;
+  --color: var(--moov-white);
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  font-weight: 600;
+  height: 54px;
+  width: 100%;
+  max-width: 300px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    --box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+    -webkit-transform: translateY(0px);
+    -moz-transform: translateY(0px);
+    -ms-transform: translateY(0px);
+    -o-transform: translateY(0px);
+}
+  50% {
+    transform: translateY(-15px);
+    -webkit-transform: translateY(-15px);
+    -moz-transform: translateY(-15px);
+    -ms-transform: translateY(-15px);
+    -o-transform: translateY(-15px);
+}
+}
+
+/* Responsive pour mobile */
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 1.5rem 1rem;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .navigation-container {
+    gap: 1.5rem;
+  }
+  
+ .next-button {
+  //Lefondduboutonestmaintenantbienvert
+  --background: #10b981;
+  /*Vert#10b981*/--color: #ffffff;
+  /*Texteblancpourlecontraste*///Stylespourunlookmoderne--border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  /*Ombreverte*/font-weight: 600;
+  height: 54px;
+  width: 100%;
+  max-width: 300px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover 
+ 
+{
+    --box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+}
+
+@media (max-height: 700px) {
+  .illustration-container {
+    padding: 0.5rem 0;
+  }
+  
+  .text-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .navigation-container {
+    gap: 1.2rem;
+  }
+}

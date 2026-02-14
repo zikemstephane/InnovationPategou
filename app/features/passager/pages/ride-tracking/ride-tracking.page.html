@@ -1,0 +1,224 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Suivi de course</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showContactModal = true" *ngIf="otherUser">
+        <ion-icon name="call-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barre de statut -->
+  <div class="status-bar" *ngIf="ride">
+    <ion-badge [color]="getStatusColor()" class="status-badge">
+      <ion-icon [name]="getStatusIcon()" slot="start"></ion-icon>
+      {{ getStatusText() }}
+    </ion-badge>
+    
+    <div class="eta-info" *ngIf="ride.statut === 'en_cours'">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>Arrivée dans {{ etaMinutes }} min</span>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="tracking-content">
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Chargement de la course...</p>
+  </div>
+
+  <!-- Contenu principal -->
+  <ng-container *ngIf="!isLoading && ride">
+    <!-- Image de la carte (simulée) -->
+    <div class="map-placeholder">
+      <div class="map-overlay">
+        <div class="route-line"></div>
+        <div class="marker departure"></div>
+        <div class="marker arrival"></div>
+        <div class="car-marker" *ngIf="ride.statut === 'en_cours'"></div>
+      </div>
+      <div class="map-addresses">
+        <div class="address-item">
+          <ion-icon name="location-outline" class="departure-icon"></ion-icon>
+          <span class="address-text">{{ ride.adresse_depart | slice:0:30 }}...</span>
+        </div>
+        <div class="address-item">
+          <ion-icon name="flag-outline" class="arrival-icon"></ion-icon>
+          <span class="address-text">{{ ride.adresse_arrivee | slice:0:30 }}...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message de bienvenue personnalisé -->
+    <div class="welcome-message">
+      <p>{{ getWelcomeMessage() }}</p>
+    </div>
+
+    <!-- Carte d'information de l'autre personne -->
+    <div class="info-card" *ngIf="otherUser">
+      <div class="card-header">
+        <div class="user-info">
+          <div class="user-avatar">
+            <img [src]="otherUser.photo || 'assets/icon/default-avatar.svg'" alt="User">
+          </div>
+          <div class="user-details">
+            <h3>{{ otherUser.name }}</h3>
+            <div class="rating" *ngIf="otherUser.rating">
+              <ion-icon name="star"></ion-icon>
+              <span>{{ otherUser.rating }}</span>
+            </div>
+          </div>
+        </div>
+        <ion-button fill="clear" size="small" (click)="showContactModal = true">
+          <ion-icon name="chatbubble-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Informations de contact -->
+      <div class="contact-info">
+        <div class="info-item">
+          <ion-icon name="call-outline"></ion-icon>
+          <span>{{ otherUser.phone_number }}</span>
+        </div>
+        <div class="info-item" *ngIf="otherUser.email">
+          <ion-icon name="mail-outline"></ion-icon>
+          <span>{{ otherUser.email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions pour le chauffeur uniquement -->
+    <div class="ride-actions" *ngIf="currentUserRole === 'chauffeur'">
+      <ng-container [ngSwitch]="ride.statut">
+        <ion-button *ngSwitchCase="'acceptee'" expand="block" class="action-button start" (click)="startRide()">
+          <ion-icon name="play-outline" slot="start"></ion-icon>
+          Démarrer la course
+        </ion-button>
+
+        <ion-button *ngSwitchCase="'en_cours'" expand="block" class="action-button complete" (click)="completeRide()">
+          <ion-icon name="flag-outline" slot="start"></ion-icon>
+          Terminer la course
+        </ion-button>
+      </ng-container>
+
+      <ion-button *ngIf="ride.statut !== 'terminee' && ride.statut !== 'annulee'" 
+                  expand="block" 
+                  fill="clear" 
+                  class="cancel-button"
+                  (click)="cancelRide()">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Annuler la course
+      </ion-button>
+    </div>
+
+    <!-- Message pour le client -->
+    <div class="client-message" *ngIf="currentUserRole === 'client' && ride.statut === 'acceptee'">
+      <p>✅ Chauffeur en route. Il arrive dans {{ etaMinutes }} minutes.</p>
+    </div>
+
+    <!-- Détails du trajet -->
+    <div class="trip-details">
+      <h3>Détails du trajet</h3>
+
+      <!-- Véhicule (pour le client) -->
+      <div class="vehicle-info" *ngIf="currentUserRole === 'client' && ride.vehicle">
+        <div class="vehicle-header">
+          <ion-icon name="car-outline"></ion-icon>
+          <span class="vehicle-name">{{ ride.vehicle.marque }} {{ ride.vehicle.modele }}</span>
+        </div>
+        <div class="vehicle-details">
+          <span class="vehicle-color">{{ ride.vehicle.couleur }}</span>
+          <span class="vehicle-plate">{{ ride.vehicle.immatriculation }}</span>
+        </div>
+      </div>
+
+      <!-- Informations supplémentaires -->
+      <div class="ride-meta">
+        <div class="meta-item">
+          <ion-icon name="cash-outline"></ion-icon>
+          <div class="meta-content">
+            <span class="meta-label">Prix</span>
+            <span class="meta-value price">{{ ride.prix | currency:'XOF':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <ion-icon name="resize-outline"></ion-icon>
+          <div class="meta-content">
+            <span class="meta-label">Distance</span>
+            <span class="meta-value">{{ ride.distance_km || distanceKm }} km</span>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <ion-icon name="card-outline"></ion-icon>
+          <div class="meta-content">
+            <span class="meta-label">Paiement</span>
+            <span class="meta-value">{{ getPaymentMethodLabel(ride.methode_paiement) }}</span>
+          </div>
+        </div>
+
+        <div class="meta-item" *ngIf="ride.instructions">
+          <ion-icon name="chatbubble-outline"></ion-icon>
+          <div class="meta-content">
+            <span class="meta-label">Instructions</span>
+            <span class="meta-value">{{ ride.instructions }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code de sécurité (pour le client) -->
+      <div class="security-code" *ngIf="currentUserRole === 'client' && ride.safe_ride_code && ride.statut !== 'terminee'">
+        <p class="code-label">🔐 Code de sécurité</p>
+        <p class="code-value">{{ ride.safe_ride_code }}</p>
+        <p class="code-hint">Donnez ce code au chauffeur pour démarrer la course</p>
+      </div>
+    </div>
+  </ng-container>
+</ion-content>
+
+<!-- Modal de contact -->
+<ion-modal [isOpen]="showContactModal" (didDismiss)="showContactModal = false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Contacter {{ currentUserRole === 'client' ? 'le chauffeur' : 'le client' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="showContactModal = false">Fermer</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <div class="contact-options">
+        <div class="contact-option" (click)="contactOther()">
+          <ion-icon name="call-outline"></ion-icon>
+          <div class="option-content">
+            <h4>Appeler</h4>
+            <p>{{ otherUser?.phone_number }}</p>
+          </div>
+        </div>
+
+        <div class="contact-option" (click)="sendMessage()">
+          <ion-icon name="chatbubble-outline"></ion-icon>
+          <div class="option-content">
+            <h4>Message</h4>
+            <p>Envoyer un message</p>
+          </div>
+        </div>
+
+        <div class="contact-option" (click)="shareLocation()">
+          <ion-icon name="share-outline"></ion-icon>
+          <div class="option-content">
+            <h4>Partager la position</h4>
+            <p>Partager votre position en temps réel</p>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

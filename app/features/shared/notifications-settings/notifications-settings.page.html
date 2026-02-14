@@ -1,0 +1,93 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/driver/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Notifications</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="settings-page">
+  <form [formGroup]="settingsForm">
+    <ion-list>
+      <ion-item>
+        <ion-toggle id="push-enabled" formControlName="pushEnabled">
+          Notifications Push
+        </ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-toggle id="new-ride-enabled" formControlName="newRideEnabled">
+          Nouvelle course
+        </ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-toggle id="payment-enabled" formControlName="paymentEnabled">
+          Paiement reçu
+        </ion-toggle>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>Son</ion-label>
+    </ion-list-header>
+    <ion-list>
+      <ion-item button>
+        <ion-label class="ion-text-wrap">
+          Son des messages
+          <ion-note color="medium">{{ settingsForm.value.messageSound }}</ion-note>
+        </ion-label>
+        <ion-select placeholder="Sélectionner un son" formControlName="messageSound">
+          <ion-select-option *ngFor="let option of soundOptions" [value]="option.value">
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    <!-- </ion-item> -->
+
+      <ion-item button>
+        <ion-label class="ion-text-wrap">
+          Son "Do Not Disturb"
+          <ion-note color="medium">{{ settingsForm.value.dndSound }}</ion-note>
+        </ion-label>
+        <ion-select placeholder="Sélectionner un son" formControlName="dndSound">
+          <ion-select-option *ngFor="let option of soundOptions" [value]="option.value">
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    <!-- </ion-item> -->
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>Avancé</ion-label>
+    </ion-list-header>
+    <ion-list>
+      <ion-item>
+        <ion-toggle id="dnd-enabled" formControlName="dndEnabled">
+          Mode "Do Not Disturb"
+        </ion-toggle>
+      </ion-item>
+    </ion-list>
+  </form>
+
+  <div class="settings-actions">
+    <ion-button expand="block" fill="outline" (click)="resetToDefaults()">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      Réinitialiser par défaut
+    </ion-button>
+    <ion-button expand="block" (click)="saveSettings()" class="save-button">
+      <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+      Enregistrer
+    </ion-button>
+  </div>
+
+  <div class="sound-library-section">
+    <ion-button expand="block" fill="outline" (click)="openSoundLibrary()">
+      <ion-icon name="musical-notes-outline" slot="start"></ion-icon>
+      Bibliothèque de sons
+    </ion-button>
+  </div>
+
+</ion-content>

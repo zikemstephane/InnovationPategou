@@ -1,0 +1,164 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button *ngIf="currentStep > 1" defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inscription</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="signup-container">
+  <!-- Indicateur de progression -->
+  <div class="progress-indicator">
+    <div class="step" [ngClass]="getProgressIndicatorClasses()[`step-indicator-1`]">
+      <div class="step-number">1</div>
+      <div class="step-label">Infos</div>
+    </div>
+    <div class="step-connector" [ngClass]="{ completed: currentStep > 1 }"></div>
+    <div class="step" [ngClass]="getProgressIndicatorClasses()[`step-indicator-2`]">
+      <div class="step-number">2</div>
+      <div class="step-label">Sécurité</div>
+    </div>
+    <div class="step-connector" [ngClass]="{ completed: currentStep > 2 }"></div>
+    <div class="step" [ngClass]="getProgressIndicatorClasses()[`step-indicator-3`]">
+      <div class="step-number">3</div>
+      <div class="step-label">Finalisation</div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <form [formGroup]="signupForm">
+      <!-- Conteneur pour les étapes, affiché/masqué par CSS -->
+      <div class="step-content" [ngClass]="getStepClasses()">
+        <!-- ÉTAPE 1 -->
+        <div class="step-1">
+          <h2 class="step-title">Créez votre compte</h2>
+          <p class="step-subtitle">Commencez par nous dire qui vous êtes</p>
+
+          <ion-list inset="true">
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+                <ion-input placeholder="Votre nom de famille" formControlName="nom"></ion-input>
+              </ion-item>
+              <div class="error-message" *ngIf="isFieldInvalid('nom')">Le nom est requis</div>
+            </div>
+
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+                <ion-input placeholder="Votre prénom" formControlName="prenom"></ion-input>
+              </ion-item>
+              <div class="error-message" *ngIf="isFieldInvalid('prenom')">Le prénom est requis</div>
+            </div>
+
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
+                <ion-input type="email" placeholder="votre.email@example.com" formControlName="email"></ion-input>
+              </ion-item>
+              <div class="error-message" *ngIf="isFieldInvalid('email')">Veuillez entrer une adresse email valide</div>
+            </div>
+
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="call-outline" slot="start" color="medium"></ion-icon>
+                <ion-input type="tel" placeholder="+226 07 00 00 00" formControlName="telephone"></ion-input>
+              </ion-item>
+              <div class="error-message" *ngIf="isFieldInvalid('telephone')">Veuillez entrer un numéro de téléphone valide</div>
+            </div>
+
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="car-outline" slot="start" color="medium"></ion-icon>
+                <ion-label position="stacked">Votre rôle</ion-label>
+                <ion-select formControlName="role" placeholder="Choisissez un rôle">
+                  <ion-select-option value="client">Passager</ion-select-option>
+                  <ion-select-option value="chauffeur">Chauffeur</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <div class="error-message" *ngIf="isFieldInvalid('role')">Le rôle est requis</div>
+            </div>
+          </ion-list>
+        </div>
+
+        <!-- ÉTAPE 2 -->
+        <div class="step-2">
+          <h2 class="step-title">Sécurisez votre compte</h2>
+          <p class="step-subtitle">Choisissez un mot de passe fort</p>
+          
+          <ion-list inset="true">
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+                <ion-input type="password" placeholder="••••••••" formControlName="motdepasse"></ion-input>
+              </ion-item>
+              <div class="error-message" *ngIf="isFieldInvalid('motdepasse')">Le mot de passe doit contenir au moins 6 caractères</div>
+            </div>
+
+            <div class="form-group">
+              <ion-item class="custom-input" fill="solid">
+                <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+                <ion-input type="password" placeholder="••••••••" formControlName="password_confirm"></ion-input>
+              </ion-item>
+              <div class="error-message" *ngIf="signupForm.errors?.['passwordMismatch'] && signupForm.get('password_confirm')?.touched">
+                Les mots de passe ne correspondent pas
+              </div>
+            </div>
+          </ion-list>
+        </div>
+
+        <!-- ÉTAPE 3 -->
+        <div class="step-3">
+          <h2 class="step-title">Dernière étape</h2>
+          <p class="step-subtitle">Ajoutez une photo et acceptez les conditions</p>
+
+          <div class="form-group">
+            <div class="photo-upload" (click)="selectFile()">
+              <input type="file" (change)="onFileSelected($event)" #fileInput hidden accept="image/*" />
+              <div class="photo-preview" *ngIf="photoPreview; else noPhoto">
+                <img [src]="photoPreview" alt="Photo de profil" />
+              </div>
+              <ng-template #noPhoto>
+                <ion-icon name="camera-outline"></ion-icon>
+                <p>Ajoutez une photo</p>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="terms-checkbox">
+            <ion-checkbox formControlName="terms"></ion-checkbox>
+            <label>J'accepte les <a href="#" (click)="showTerms($event)">conditions d'utilisation</a> et la <a href="#" (click)="showPrivacy($event)">politique de confidentialité</a></label>
+          </div>
+          <div class="error-message" *ngIf="isFieldInvalid('terms')">Vous devez accepter les conditions pour continuer</div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Boutons de navigation -->
+  <div class="navigation-buttons">
+    <ion-button *ngIf="currentStep > 1" fill="clear" color="medium" (click)="previousStep()">
+      Précédent
+    </ion-button>
+
+    <ion-button
+      *ngIf="currentStep < 3"
+      expand="block"
+      (click)="nextStep()"
+      [disabled]="isCurrentStepInvalid()"
+      class="next-button">
+      Suivant
+    </ion-button>
+
+    <ion-button
+      *ngIf="currentStep === 3"
+      expand="block"
+      (click)="signup()"
+      [disabled]="signupForm.invalid || isSubmitting"
+      class="signup-button">
+      <ion-spinner *ngIf="isSubmitting" slot="start"></ion-spinner>
+      S'inscrire
+    </ion-button>
+  </div>
+</ion-content>

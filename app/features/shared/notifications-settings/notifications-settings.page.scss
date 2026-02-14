@@ -1,0 +1,78 @@
+// --- Palettes de couleurs (valeurs codées en dur) ---
+ $primary-green: #10b981;
+ $primary-green-dark:   #059669;
+ $primary-green-light: #34d399;
+ $white: #ffffff;
+ $gray-50: #f9fafb;
+ $gray-100: #f3f4f6;
+ $gray-200: #e5e7eb;
+ $gray-300: #d1d5db;
+ $gray-400: #9ca3af;
+ $gray-500: #6b7280;
+ $gray-600: #4b5563;
+ $gray-700: #374151;
+ $gray-800: #1f2937;
+ $error-red: #ef4444;
+ $warning-yellow: #f59e0b;
+
+.settings-page {
+  --background: #f9fafb;
+}
+
+ion-item {
+  --background: #ffffff;
+  --border-radius: 8px;
+  --margin-bottom: 1px;
+  --min-height: 60px;
+}
+
+ion-toggle {
+  --background: #d1d5db;
+  --background-checked: #10b981;
+  --handle-background: #ffffff;
+}
+
+ion-note {
+  color: #6b7280;
+}
+
+ion-select {
+  --placeholder-color: #9ca3af;
+  --placeholder-opacity: 1;
+}
+
+ion-list-header {
+  --background: #f3f4f6;
+  --color: #1f2937;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.settings-actions {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+
+  ion-button {
+    --border-radius: 12px;
+    font-weight: 600;
+    height: 50px;
+
+    &[fill="outline"] {
+      --color: #6b7280;
+    }
+
+    &.save-button {
+      --background: #10b981;
+      --color: #ffffff;
+      --box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+  }
+}
+
+.sound-library-section {
+  padding: 16px;
+  margin-top: auto;
+}

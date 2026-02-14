@@ -1,0 +1,175 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/passenger/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Réserver une course</ion-title>
+  </ion-toolbar>
+
+<ion-content class="book-ride-page">
+  <form [formGroup]="bookRideForm">
+    <!-- Indicateur de progression -->
+    <div class="progress-indicator">
+      <div class="step" [class]="{'active': currentStep === 1, 'completed': currentStep > 1}">
+        <div class="step-number">1</div>
+        <div class="step-label">Lieux</div>
+      </div>
+      <div class="step-connector" [class]="{'completed': currentStep > 1}"></div>
+      <div class="step" [class]="{'active': currentStep === 2, 'completed': currentStep > 2}">
+        <div class="step-number">2</div>
+        <div class="step-label">Options</div>
+      </div>
+      <div class="step-connector" [class]="{'completed': currentStep > 2}"></div>
+      <div class="step" [class]="{'active': currentStep === 3, 'completed': currentStep > 3}">
+        <div class="step-number">3</div>
+        <div class="step-label">Confirmation</div>
+      </div>
+      <div class="step-connector" [class]="{'completed': currentStep > 3}"></div>
+      <div class="step" [class]="{'active': currentStep === 4, 'completed': currentStep > 4}">
+        <div class="step-number">4</div>
+        <div class="step-label">Paiement</div>
+      </div>
+    </div>
+
+    <!-- Contenu des étapes -->
+    <div class="step-content">
+      <!-- ÉTAPE 1: Lieux -->
+      <div class="step-1" *ngIf="currentStep === 1">
+        <h2>Où allez-vous ?</h2>
+        <ion-list>
+          <ion-item class="custom-input" fill="solid">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-input placeholder="Adresse de départ" formControlName="pickupAddress"></ion-input>
+          </ion-item>
+          <ion-item class="custom-input" fill="solid">
+            <ion-icon name="navigate-outline" slot="start"></ion-icon>
+            <ion-input placeholder="Adresse de destination" formControlName="dropoffAddress"></ion-input>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <!-- ÉTAPE 2: Options -->
+      <div class="step-2" *ngIf="currentStep === 2">
+        <h2>Choisissez vos options</h2>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Type de véhicule</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-radio-group formControlName="vehicleType">
+              <ion-item>
+                <ion-avatar slot="start">
+                  <ion-icon name="bicycle-outline"></ion-icon>
+                </ion-avatar>
+                <ion-label>
+                  <h3>Moto-Taxi</h3>
+                  <p>Rapide et économique</p>
+                </ion-label>
+                <ion-radio value="moto"></ion-radio>
+              </ion-item>
+              <ion-item>
+                <ion-avatar slot="start">
+                  <ion-icon name="car-outline"></ion-icon>
+                </ion-avatar>
+                <ion-label>
+                  <h3>Voiture</h3>
+                  <p>Confortable et sécurisée</p>
+                </ion-label>
+                <ion-radio value="voiture"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- ÉTAPE 3: Confirmation -->
+      <div class="step-3" *ngIf="currentStep === 3">
+        <h2>Confirmez votre réservation</h2>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>Départ</h3>
+              <p>{{ bookRideForm.value.pickupAddress }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Destination</h3>
+              <p>{{ bookRideForm.value.dropoffAddress }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Type de véhicule</h3>
+              <p>{{ bookRideForm.value.vehicleType | titlecase }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h3>Prix estimé</h3>
+              <p><strong>{{ estimatedPrice | currency:'XOF' }}</strong></p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-checkbox formControlName="confirmation">
+          Je confirme les informations ci-dessus et j'accepte les conditions d'utilisation.
+        </ion-checkbox>
+      </div>
+
+      <!-- ÉTAPE 4: Paiement -->
+      <div class="step-4" *ngIf="currentStep === 4">
+        <h2>Choisissez un moyen de paiement</h2>
+        <ion-list>
+          <ion-radio-group formControlName="paymentMethod">
+            <ion-item>
+              <ion-avatar slot="start">
+                <ion-icon name="cash-outline"></ion-icon>
+              </ion-avatar>
+              <ion-label>
+                <h3>Espèces</h3>
+                <p>Payer le chauffeur directement en espèces.</p>
+              </ion-label>
+              <ion-radio value="especes"></ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-avatar slot="start">
+                <ion-icon name="phone-portrait-outline"></ion-icon>
+              </ion-avatar>
+              <ion-label>
+                <h3>Mobile Money</h3>
+                <p>Payer avec votre compte Mobile Money.</p>
+              </ion-label>
+              <ion-radio value="mobile_money"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
+      </div>
+    </div>
+  </form>
+
+  <!-- Boutons de navigation -->
+  <div class="navigation-buttons">
+    <ion-button *ngIf="currentStep > 1" fill="clear" color="medium" (click)="previousStep()">
+      Précédent
+    </ion-button>
+
+    <ion-button
+      *ngIf="currentStep < totalSteps"
+      expand="block"
+      (click)="nextStep()"
+      [disabled]="isCurrentStepValid()">
+      Suivant
+    </ion-button>
+
+    <ion-button
+      *ngIf="currentStep === totalSteps"
+      expand="block"
+      (click)="submitRide()"
+      [disabled]="bookRideForm.invalid || isSubmitting"
+      class="submit-button">
+      <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+      {{ isSubmitting ? 'Réservation...' : 'Réserver' }}
+      <ion-spinner *ngIf="isSubmitting" name="crescent" slot="end"></ion-spinner>
+    </ion-button>
+  </div>
+</ion-content>

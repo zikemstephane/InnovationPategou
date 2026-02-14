@@ -1,0 +1,135 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/client/home" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nouvelle Course</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="create-ride-content">
+  <!-- Carte Google Maps -->
+  <div id="map" class="map-container"></div>
+
+  <!-- Formulaire de création -->
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Détails de la course</h2>
+      <p>Remplissez les informations ci-dessous</p>
+    </div>
+
+    <form [formGroup]="rideForm" (ngSubmit)="createRide()">
+      <!-- Adresse de départ -->
+      <div class="form-group">
+        <ion-item class="form-item" lines="full">
+          <ion-icon name="location-outline" slot="start" class="input-icon departure"></ion-icon>
+          <ion-input
+            formControlName="adresse_depart"
+            placeholder="Adresse de départ"
+            (ionInput)="searchAddress('depart', $event)"
+          ></ion-input>
+          <ion-button slot="end" fill="clear" size="small" (click)="useCurrentLocation()">
+            <ion-icon name="locate-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <div class="error-message" *ngIf="isFieldInvalid('adresse_depart')">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>L'adresse de départ est requise</span>
+        </div>
+      </div>
+
+      <!-- Adresse d'arrivée -->
+      <div class="form-group">
+        <ion-item class="form-item" lines="full">
+          <ion-icon name="flag-outline" slot="start" class="input-icon arrival"></ion-icon>
+          <ion-input
+            formControlName="adresse_arrivee"
+            placeholder="Adresse d'arrivée"
+            (ionInput)="searchAddress('arrivee', $event)"
+          ></ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="isFieldInvalid('adresse_arrivee')">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>L'adresse d'arrivée est requise</span>
+        </div>
+      </div>
+
+      <!-- Suggestions d'adresses -->
+      <div class="suggestions" *ngIf="suggestions.length > 0">
+        <div class="suggestion-item" *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ suggestion.description }}</span>
+        </div>
+      </div>
+
+      <!-- Type de véhicule -->
+      <div class="form-group">
+        <ion-label class="section-label">Type de véhicule</ion-label>
+        <div class="vehicle-options">
+          <div class="vehicle-option" [class.selected]="rideForm.get('vehicleType')?.value === 'moto'" (click)="selectVehicle('moto')">
+            <ion-icon name="bicycle-outline"></ion-icon>
+            <span>Moto</span>
+          </div>
+          <div class="vehicle-option" [class.selected]="rideForm.get('vehicleType')?.value === 'voiture'" (click)="selectVehicle('voiture')">
+            <ion-icon name="car-outline"></ion-icon>
+            <span>Voiture</span>
+          </div>
+          <div class="vehicle-option" [class.selected]="rideForm.get('vehicleType')?.value === 'bus'" (click)="selectVehicle('bus')">
+            <ion-icon name="bus-outline"></ion-icon>
+            <span>Bus</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode de paiement -->
+      <div class="form-group">
+        <ion-label class="section-label">Mode de paiement</ion-label>
+        <div class="payment-options">
+          <div class="payment-option" [class.selected]="rideForm.get('methode_paiement')?.value === 'especes'" (click)="selectPayment('especes')">
+            <ion-icon name="cash-outline"></ion-icon>
+            <span>Espèces</span>
+          </div>
+          <div class="payment-option" [class.selected]="rideForm.get('methode_paiement')?.value === 'carte'" (click)="selectPayment('carte')">
+            <ion-icon name="card-outline"></ion-icon>
+            <span>Carte</span>
+          </div>
+          <div class="payment-option" [class.selected]="rideForm.get('methode_paiement')?.value === 'mobile_money'" (click)="selectPayment('mobile_money')">
+            <ion-icon name="phone-portrait-outline"></ion-icon>
+            <span>Mobile Money</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions supplémentaires -->
+      <div class="form-group">
+        <ion-item class="form-item" lines="full">
+          <ion-icon name="chatbubble-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-textarea
+            formControlName="instructions"
+            placeholder="Instructions supplémentaires (optionnel)"
+            rows="3"
+            maxlength="200"
+          ></ion-textarea>
+        </ion-item>
+      </div>
+
+      <!-- Estimation du prix -->
+      <div class="price-estimate" *ngIf="estimatedPrice">
+        <div class="price-label">Prix estimé</div>
+        <div class="price-value">{{ estimatedPrice | currency:'XOF':'symbol':'1.0-0' }}</div>
+      </div>
+
+      <!-- Bouton de création -->
+      <ion-button
+        type="submit"
+        expand="block"
+        class="create-button"
+        [disabled]="rideForm.invalid || isCreating"
+      >
+        <ion-spinner *ngIf="isCreating" name="crescent"></ion-spinner>
+        <span *ngIf="!isCreating">Créer la course</span>
+        <span *ngIf="isCreating">Création en cours...</span>
+      </ion-button>
+    </form>
+  </div>
+</ion-content>

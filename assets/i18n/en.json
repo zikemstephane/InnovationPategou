@@ -1,0 +1,21 @@
+{
+  "splashscreen": {
+    "title": "Welcome to MoovCity",
+    "subtitle": "Your secure and transparent urban transport solution."
+  },
+  "onboarding1": {
+    "title": "Safety First",
+    "description": "Travel with peace of mind with our verifications and real-time tracking.",
+    "next": "Next"
+  },
+  "onboarding2": {
+    "title": "Transparent Pricing",
+    "description": "Clear and fair prices, no surprises upon arrival.",
+    "next": "Next"
+  },
+  "onboarding3": {
+    "title": "Fleet Management",
+    "description": "Easily manage your vehicles and drivers via our dashboard.",
+    "start": "Get Started"
+  }
+}

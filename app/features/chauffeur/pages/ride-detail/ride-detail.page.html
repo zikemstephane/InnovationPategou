@@ -1,0 +1,290 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/driver/rides" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Détail de la Course</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="goToRidesList()">
+        <ion-icon name="list-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ride-detail-page">
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Chargement des détails...</p>
+  </div>
+
+  <!-- Contenu principal -->
+  <ng-container *ngIf="!isLoading && ride">
+    <!-- Badge de statut -->
+    <div class="status-banner">
+      <ion-badge [color]="getStatusColor()" class="status-badge">
+        <ion-icon [name]="ride.statut === 'en_cours' ? 'car-outline' : 'time-outline'" slot="start"></ion-icon>
+        {{ getStatusText() }}
+      </ion-badge>
+    </div>
+
+    <!-- ================= CLIENT / CHAUFFEUR (selon le rôle) ================= -->
+    <ion-card class="user-info-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon [name]="currentUserRole === 'chauffeur' ? 'person-outline' : 'car-outline'"></ion-icon>
+          {{ currentUserRole === 'chauffeur' ? 'Informations Client' : 'Informations Chauffeur' }}
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="user-profile">
+          <img 
+            [src]="(currentUserRole === 'chauffeur' ? ride.client?.photo : ride.chauffeur?.photo) || 'assets/icon/default-avatar.svg'" 
+            alt="Photo"
+            class="user-avatar"
+          />
+          <div class="user-details">
+            <h2>{{ currentUserRole === 'chauffeur' ? ride.client?.name : ride.chauffeur?.name }}</h2>
+            <div class="user-rating" *ngIf="(currentUserRole === 'chauffeur' ? ride.client?.rating : ride.chauffeur?.rating)">
+              <ion-icon name="star" color="warning"></ion-icon>
+              <span>{{ currentUserRole === 'chauffeur' ? ride.client?.rating : ride.chauffeur?.rating }}</span>
+            </div>
+            <div class="user-phone" *ngIf="currentUserRole === 'chauffeur' ? ride.client?.phone_number : ride.chauffeur?.phone_number">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ currentUserRole === 'chauffeur' ? ride.client?.phone_number : ride.chauffeur?.phone_number }}</span>
+            </div>
+          </div>
+          <ion-button fill="clear" size="small" (click)="currentUserRole === 'chauffeur' ? contactClient() : contactDriver()">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ================= ITINÉRAIRE ================= -->
+    <ion-card class="route-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="map-outline"></ion-icon>
+          Itinéraire
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="route-points">
+          <div class="point departure">
+            <div class="point-marker">
+              <ion-icon name="location-outline" class="departure-icon"></ion-icon>
+            </div>
+            <div class="point-address">
+              <p class="point-label">Départ</p>
+              <p class="point-value">{{ ride.adresse_depart }}</p>
+            </div>
+          </div>
+          
+          <div class="route-line"></div>
+          
+          <div class="point arrival">
+            <div class="point-marker">
+              <ion-icon name="flag-outline" class="arrival-icon"></ion-icon>
+            </div>
+            <div class="point-address">
+              <p class="point-label">Arrivée</p>
+              <p class="point-value">{{ ride.adresse_arrivee }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="route-stats" *ngIf="ride.distance_km">
+          <ion-chip>
+            <ion-icon name="resize-outline"></ion-icon>
+            <ion-label>{{ ride.distance_km }} km</ion-label>
+          </ion-chip>
+          <ion-chip>
+            <ion-icon name="time-outline"></ion-icon>
+            <ion-label>{{ ride.duree_estimee || 'N/A' }}</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ================= DÉTAILS DE LA COURSE ================= -->
+    <ion-card class="details-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="document-text-outline"></ion-icon>
+          Détails de la Course
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-note>Prix</ion-note>
+              <p class="detail-value price">{{ ride.prix | currency:'XOF':'symbol':'1.0-0' }}</p>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-note>Paiement</ion-note>
+              <div class="payment-info">
+                <p class="detail-value">{{ getPaymentMethodLabel(ride.methode_paiement) }}</p>
+                <ion-badge [color]="ride.est_payee ? 'success' : 'warning'" size="small">
+                  {{ ride.est_payee ? 'Payé' : 'En attente' }}
+                </ion-badge>
+              </div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="6">
+              <ion-note>Date</ion-note>
+              <p class="detail-value">{{ ride.date_demande | date:'dd/MM/yyyy' }}</p>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-note>Heure</ion-note>
+              <p class="detail-value">{{ ride.date_demande | date:'HH:mm' }}</p>
+            </ion-col>
+          </ion-row>
+
+          <ion-row *ngIf="ride.instructions">
+            <ion-col size="12">
+              <ion-note>Instructions</ion-note>
+              <p class="detail-value instructions">{{ ride.instructions }}</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ================= VÉHICULE ================= -->
+    <ion-card *ngIf="ride.vehicle && currentUserRole === 'client'">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon [name]="getVehicleIcon()"></ion-icon>
+          Véhicule
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="vehicle-details">
+          <div class="vehicle-icon">
+            <ion-icon [name]="getVehicleIcon()" class="vehicle-icon-large"></ion-icon>
+          </div>
+          <div class="vehicle-specs">
+            <h3>{{ ride.vehicle.marque }} {{ ride.vehicle.modele }}</h3>
+            <p class="vehicle-plate">{{ ride.vehicle.immatriculation }}</p>
+            <p class="vehicle-color">{{ ride.vehicle.couleur }} • {{ ride.vehicle.capacite }} places</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ================= CODE DE SÉCURITÉ ================= -->
+    <ion-card *ngIf="ride.statut === 'acceptee' && currentUserRole === 'chauffeur'" class="security-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Code de Sécurité
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="code-section">
+          <div class="code-display">{{ ride.safe_ride_code || '1234' }}</div>
+          <p class="code-hint">Demandez ce code au client avant de démarrer</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="ride.statut === 'acceptee' && currentUserRole === 'client'" class="security-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Votre Code de Sécurité
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="code-section">
+          <div class="code-display">{{ ride.safe_ride_code || '1234' }}</div>
+          <p class="code-hint">Donnez ce code au chauffeur avant de démarrer</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ================= ACTIONS POUR LE CHAUFFEUR ================= -->
+    <div class="action-section" *ngIf="currentUserRole === 'chauffeur'">
+      <!-- Démarrer la course -->
+      <div *ngIf="ride.statut === 'acceptee'" class="start-ride-section">
+        <ion-item class="code-input-item">
+          <ion-input
+            type="text"
+            maxlength="6"
+            placeholder="Entrez le code de sécurité"
+            [(ngModel)]="enteredCode"
+            (ionInput)="enteredCode = enteredCode.toUpperCase()"
+          ></ion-input>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          class="action-button start-button"
+          (click)="startRide()"
+          [disabled]="enteredCode.length !== 6 || isStartingRide">
+          <ion-icon name="play-outline" slot="start"></ion-icon>
+          Démarrer la course
+          <ion-spinner *ngIf="isStartingRide" slot="end"></ion-spinner>
+        </ion-button>
+      </div>
+
+      <!-- Terminer la course -->
+      <div *ngIf="ride.statut === 'en_cours'" class="end-ride-section">
+        <ion-button
+          expand="block"
+          class="action-button end-button"
+          (click)="endRide()"
+          [disabled]="isEndingRide">
+          <ion-icon name="stop-circle-outline" slot="start"></ion-icon>
+          Terminer la course
+          <ion-spinner *ngIf="isEndingRide" slot="end"></ion-spinner>
+        </ion-button>
+      </div>
+
+      <!-- Annuler la course (toujours possible sauf si terminée) -->
+      <div *ngIf="ride.statut !== 'terminee' && ride.statut !== 'annulee'" class="cancel-section">
+        <ion-button
+          expand="block"
+          fill="clear"
+          class="cancel-button"
+          (click)="cancelRide()">
+          <ion-icon name="close-outline" slot="start"></ion-icon>
+          Annuler la course
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- ================= MESSAGE POUR LE CLIENT ================= -->
+    <div *ngIf="currentUserRole === 'client'" class="client-message">
+      <div *ngIf="ride.statut === 'acceptee'" class="info-message">
+        <ion-icon name="time-outline"></ion-icon>
+        <p>Le chauffeur arrive dans environ 15 minutes</p>
+      </div>
+      
+      <div *ngIf="ride.statut === 'en_cours'" class="info-message">
+        <ion-icon name="car-outline"></ion-icon>
+        <p>Votre course est en cours</p>
+      </div>
+      
+      <div *ngIf="ride.statut === 'terminee'" class="info-message">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <p>Course terminée. Merci d'avoir voyagé avec nous !</p>
+      </div>
+    </div>
+  </ng-container>
+</ion-content>

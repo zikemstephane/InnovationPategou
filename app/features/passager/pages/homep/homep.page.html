@@ -1,0 +1,203 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>MoovCity</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToNotifications()" class="notification-button">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <ion-badge color="danger" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="client-home">
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- En-tête utilisateur -->
+  <div class="user-header">
+    <div class="user-greeting">
+      <ion-avatar class="user-avatar">
+        <img [src]="userAvatar" alt="Avatar">
+      </ion-avatar>
+      <div class="greeting-text">
+        <p class="hello">Bonjour,</p>
+        <h2>{{ userName }}</h2>
+      </div>
+    </div>
+    <div class="user-stats">
+      <div class="stat">
+        <span class="stat-value">{{ stats.totalRides }}</span>
+        <span class="stat-label">Courses</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ stats.averageRating }}</span>
+        <span class="stat-label">Note</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barre de recherche -->
+  <div class="search-section">
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Où allez-vous ?"
+      [showCancelButton]="showSuggestions ? 'always' : 'never'"
+      (ionCancel)="showSuggestions = false">
+    </ion-searchbar>
+
+    <!-- Suggestions de recherche -->
+    <div class="search-suggestions" *ngIf="showSuggestions && searchSuggestions.length > 0">
+      <div class="suggestion-item" *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ suggestion.description }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="quick-actions">
+    <ion-button expand="block" class="book-ride-button" (click)="goToBookRide()">
+      <ion-icon name="car-outline" slot="start"></ion-icon>
+      Réserver une course
+    </ion-button>
+    
+    <div class="action-chips">
+      <ion-chip (click)="quickBook('Aéroport')">
+        <ion-icon name="airplane-outline"></ion-icon>
+        <ion-label>Aéroport</ion-label>
+      </ion-chip>
+      <ion-chip (click)="quickBook('Gare')">
+        <ion-icon name="train-outline"></ion-icon>
+        <ion-label>Gare</ion-label>
+      </ion-chip>
+      <ion-chip (click)="repeatLastRide()" *ngIf="recentRides.length > 0">
+        <ion-icon name="repeat-outline"></ion-icon>
+        <ion-label>Répéter</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
+  <!-- Adresses favorites -->
+  <div class="favorites-section" *ngIf="favoriteAddresses.length > 0">
+    <div class="section-header">
+      <h3>Adresses favorites</h3>
+      <ion-button fill="clear" size="small" (click)="goToSettings()">
+        Gérer
+      </ion-button>
+    </div>
+    
+    <div class="favorites-list">
+      <div class="favorite-item" *ngFor="let fav of favoriteAddresses" (click)="useFavoriteAddress(fav, 'depart')">
+        <div class="favorite-icon">
+          <ion-icon [name]="fav.icon"></ion-icon>
+        </div>
+        <div class="favorite-info">
+          <h4>{{ fav.name }}</h4>
+          <p>{{ fav.address }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section des courses récentes -->
+  <div class="recent-rides-section">
+    <div class="section-header">
+      <h3>Courses récentes</h3>
+      <ion-button fill="clear" size="small" (click)="goToTrips()">
+        Voir tout
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- État de chargement -->
+    <div class="loading-rides" *ngIf="isLoading">
+      <ion-skeleton-text animated style="width: 100%; height: 80px; border-radius: 12px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 100%; height: 80px; border-radius: 12px; margin-top: 8px;"></ion-skeleton-text>
+    </div>
+
+    <!-- Liste des courses récentes -->
+    <div class="rides-list" *ngIf="!isLoading">
+      <div class="ride-card" *ngFor="let ride of recentRides" (click)="showRideOptions(ride)">
+        <div class="ride-header">
+          <div class="ride-type">
+            <ion-icon [name]="getVehicleIcon(ride.vehicle?.type_vehicule || 'voiture')"></ion-icon>
+            <span>{{ ride.vehicle?.type_vehicule || 'Course' }}</span>
+          </div>
+          <ion-badge [color]="getStatusColor(ride.statut)" class="ride-status">
+            {{ getStatusText(ride.statut) }}
+          </ion-badge>
+        </div>
+
+        <div class="ride-addresses">
+          <div class="address departure">
+            <ion-icon name="location-outline" class="departure-icon"></ion-icon>
+            <p>{{ ride.adresse_depart }}</p>
+          </div>
+          <div class="address arrival">
+            <ion-icon name="flag-outline" class="arrival-icon"></ion-icon>
+            <p>{{ ride.adresse_arrivee }}</p>
+          </div>
+        </div>
+
+        <div class="ride-footer">
+          <div class="ride-meta">
+            <span class="price">{{ formatPrice(ride.prix) }}</span>
+            <span class="time">{{ formatTime(ride.date_demande) }}</span>
+          </div>
+          <div class="driver-info" *ngIf="ride.chauffeur">
+            <ion-avatar class="driver-avatar">
+              <img [src]="ride.chauffeur.photo || 'assets/icon/default-avatar.svg'" alt="Chauffeur">
+            </ion-avatar>
+            <span>{{ ride.chauffeur.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message si aucune course -->
+      <div class="no-rides" *ngIf="recentRides.length === 0">
+        <ion-icon name="car-outline"></ion-icon>
+        <h4>Aucune course récente</h4>
+        <p>Réservez votre première course !</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques mensuelles -->
+  <div class="stats-section">
+    <div class="section-header">
+      <h3>Statistiques</h3>
+      <ion-icon name="trending-up-outline" class="stats-icon"></ion-icon>
+    </div>
+    
+    <ion-grid class="stats-grid">
+      <ion-row>
+        <ion-col size="6">
+          <div class="stat-card">
+            <span class="stat-card-value">{{ stats.totalRides }}</span>
+            <span class="stat-card-label">Courses totales</span>
+          </div>
+        </ion-col>
+        <ion-col size="6">
+          <div class="stat-card">
+            <span class="stat-card-value">{{ stats.totalSpent | currency:'XOF':'':'1.0-0' }}</span>
+            <span class="stat-card-label">Dépensé</span>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>
+
+<!-- Bouton flottant pour nouvelle course -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="primary" (click)="goToBookRide()">
+    <ion-icon name="add-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

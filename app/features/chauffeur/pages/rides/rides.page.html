@@ -1,0 +1,218 @@
+<!-- rides.page.html -->
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/driver/home" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mes Courses</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFilterModal = true">
+        <ion-icon name="funnel-outline"></ion-icon>
+        <ion-badge color="primary" *ngIf="activeFilter !== 'all'">1</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Statistiques rapides -->
+  <div class="stats-bar" *ngIf="!isLoading && rides.length > 0">
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.total }}</span>
+      <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value warning">{{ stats.pending }}</span>
+      <span class="stat-label">En attente</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value success">{{ stats.completed }}</span>
+      <span class="stat-label">Terminées</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value danger">{{ stats.cancelled }}</span>
+      <span class="stat-label">Annulées</span>
+    </div>
+  </div>
+
+  <!-- Filtres rapides -->
+  <div class="quick-filters" *ngIf="!isLoading">
+    <ion-chip 
+      *ngFor="let filter of filters" 
+      [class.active]="filter.active"
+      (click)="applyFilter(filter.value)">
+      <ion-icon [name]="filter.icon"></ion-icon>
+      <ion-label>{{ filter.label }}</ion-label>
+    </ion-chip>
+  </div>
+</ion-header>
+
+<ion-content class="rides-page">
+  <!-- Pull-to-refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="skeleton-rides">
+      <div class="skeleton-item" *ngFor="let _ of [1,2,3]"></div>
+    </div>
+  </div>
+
+  <!-- Liste des courses -->
+  <div class="rides-container" *ngIf="!isLoading && filteredRides.length > 0">
+    <div *ngFor="let group of groupedRides" class="ride-group">
+      <div class="group-header">
+        <span>{{ group.date | date:'fullDate' }}</span>
+        <span class="group-count">{{ group.rides.length }} course(s)</span>
+      </div>
+
+      <div class="ride-cards">
+        <div *ngFor="let ride of group.rides" class="ride-card" [class]="getStatusClass(ride.statut)">
+          <!-- En-tête de la carte -->
+          <div class="card-header">
+            <div class="client-info">
+              <div class="client-avatar">
+                <img [src]="ride.client?.photo || 'assets/icon/default-avatar.svg'" alt="Client">
+              </div>
+              <div class="client-details">
+                <h3>{{ ride.client?.name || 'Client' }}</h3>
+                <div class="ride-time">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>{{ ride.date_demande | date:'HH:mm' }}</span>
+                </div>
+              </div>
+            </div>
+            <ion-badge [color]="getStatusColor(ride.statut)">
+              <ion-icon [name]="getStatusIcon(ride.statut)" slot="start"></ion-icon>
+              {{ getStatusText(ride.statut) }}
+            </ion-badge>
+          </div>
+
+          <!-- Détails du trajet -->
+          <div class="trip-details">
+            <div class="location">
+              <div class="point departure">
+                <div class="dot departure-dot"></div>
+                <p class="address">{{ ride.adresse_depart }}</p>
+              </div>
+              <div class="point arrival">
+                <div class="dot arrival-dot"></div>
+                <p class="address">{{ ride.adresse_arrivee }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pied de carte -->
+          <div class="card-footer">
+            <div class="footer-left">
+              <div class="price" *ngIf="ride.prix">
+                <ion-icon name="cash-outline"></ion-icon>
+                {{ ride.prix | currency:'XOF':'symbol':'1.0-0' }}
+              </div>
+              <div class="distance" *ngIf="ride.distance_km">
+                <ion-icon name="resize-outline"></ion-icon>
+                {{ ride.distance_km }} km
+              </div>
+            </div>
+
+            <!-- Actions selon le statut -->
+            <div class="footer-right">
+              <ng-container [ngSwitch]="ride.statut">
+                <!-- En attente -->
+                <div *ngSwitchCase="'en_attente'" class="action-buttons">
+                  <ion-button size="small" fill="solid" color="success" (click)="acceptRide(ride.id)">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button size="small" fill="solid" color="danger" (click)="declineRide(ride.id)">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-button>
+                </div>
+
+                <!-- Acceptée -->
+                <div *ngSwitchCase="'acceptee'" class="action-buttons">
+                  <ion-button size="small" fill="solid" color="primary" (click)="startRide(ride.id)">
+                    <ion-icon name="play-outline"></ion-icon>
+                    Démarrer
+                  </ion-button>
+                </div>
+
+                <!-- En cours -->
+                <div *ngSwitchCase="'en_cours'" class="action-buttons">
+                  <ion-button size="small" fill="solid" color="success" (click)="completeRide(ride.id)">
+                    <ion-icon name="flag-outline"></ion-icon>
+                    Terminer
+                  </ion-button>
+                  <ion-button size="small" fill="clear" (click)="goToRideDetail(ride.id, 'track')">
+                    <ion-icon name="navigate-outline"></ion-icon>
+                  </ion-button>
+                </div>
+
+                <!-- Terminée / Annulée -->
+                <div *ngSwitchDefault class="action-buttons">
+                  <ion-button size="small" fill="clear" (click)="goToRideDetail(ride.id, 'details')">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    Détails
+                  </ion-button>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- État vide amélioré -->
+  <div *ngIf="!isLoading && filteredRides.length === 0" class="empty-state-enhanced">
+    <div class="empty-illustration">
+      <ion-icon name="car-outline"></ion-icon>
+    </div>
+    <h3>Aucune course trouvée</h3>
+    <p *ngIf="activeFilter !== 'all'">
+      Aucune course avec le filtre "{{ getFilterLabel(activeFilter) }}"
+    </p>
+    <p *ngIf="activeFilter === 'all'">
+      Vous n'avez pas encore de courses
+    </p>
+    <div class="empty-actions">
+      <ion-button fill="solid" color="primary" *ngIf="activeFilter !== 'all'" (click)="resetFilter()">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Réinitialiser
+      </ion-button>
+      <ion-button fill="outline" color="primary" (click)="goOnline()">
+        <ion-icon name="power-outline" slot="start"></ion-icon>
+        Se mettre en ligne
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
+
+<!-- FAB pour créer une course -->
+<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+  <ion-fab-button color="primary" (click)="createRide()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<!-- Modal de filtres -->
+<ion-modal [isOpen]="showFilterModal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Filtrer les courses</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="showFilterModal = false">Fermer</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item *ngFor="let filter of filters" button (click)="applyFilter(filter.value)">
+          <ion-icon [name]="filter.icon" slot="start" [color]="filter.active ? 'primary' : ''"></ion-icon>
+          <ion-label>{{ filter.label }}</ion-label>
+          <ion-icon name="checkmark-outline" slot="end" *ngIf="filter.active" color="primary"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

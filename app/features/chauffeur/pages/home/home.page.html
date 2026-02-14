@@ -1,0 +1,201 @@
+<!-- home.page.html -->
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Tableau de bord</ion-title>
+    <ion-buttons slot="end">
+      <div class="notification-bell" [class.has-notifications]="unreadCount > 0" (click)="toggleNotificationPanel()">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <span class="notification-badge" *ngIf="unreadCount > 0">
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="driver-home" [class.has-expanded-notifications]="isNotificationExpanded">
+  <!-- État de chargement -->
+  <ng-container *ngIf="isLoading; else content">
+    <div class="loading-skeleton">
+      <div class="skeleton-profile"></div>
+      <div class="skeleton-earnings"></div>
+      <div class="skeleton-rides"></div>
+    </div>
+  </ng-container>
+
+  <ng-template #content>
+    <!-- Panneau de notifications (glissant) -->
+    <div class="notification-panel" [class.expanded]="isNotificationExpanded">
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <ion-button fill="clear" size="small" (click)="markAllAsRead()" [disabled]="unreadCount === 0">
+          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+          Tout marquer
+        </ion-button>
+      </div>
+
+      <div class="notification-list">
+        <div *ngIf="unreadNotifications.length === 0" class="empty-notifications">
+          <ion-icon name="notifications-off-outline"></ion-icon>
+          <p>Aucune notification</p>
+        </div>
+
+        <div *ngFor="let notification of unreadNotifications" class="notification-item" [class.urgent]="notification.isUrgent">
+          <div class="notification-icon" [ngClass]="getNotificationIconClass(notification.type)">
+            <ion-icon [name]="getNotificationIconName(notification.type)"></ion-icon>
+          </div>
+          <div class="notification-content">
+            <h4>{{ notification.title }}</h4>
+            <p>{{ notification.message }}</p>
+            <span class="time">{{ notification.created_at | timeAgo }}</span>
+          </div>
+          <ion-button fill="clear" size="small" (click)="markAsRead(notification.id)">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="notification-footer">
+        <ion-button fill="clear" expand="block" size="small" (click)="goToAllNotifications()">
+          Voir toutes les notifications
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="main-content" [class.notification-open]="isNotificationExpanded">
+      <!-- Carte Profil -->
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <img [src]="driverProfile?.user?.photo || 'assets/icon/default-avatar.svg'" alt="Profile">
+            <div class="online-indicator" [class.online]="isOnline" [class.offline]="!isOnline"></div>
+          </div>
+          <div class="profile-info">
+            <h2>{{ driverProfile?.user?.name || 'Chauffeur' }}</h2>
+            <p class="status" [class.online]="isOnline" [class.offline]="!isOnline">
+              <ion-icon name="ellipse"></ion-icon>
+              {{ isOnline ? 'En ligne' : 'Hors ligne' }}
+            </p>
+          </div>
+          <ion-button fill="clear" size="small" (click)="goToProfile()" class="edit-button">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat">
+            <span class="value">{{ stats?.totalRides || 0 }}</span>
+            <span class="label">Courses</span>
+          </div>
+          <div class="stat">
+            <span class="value">{{ stats?.averageRating ? (stats?.averageRating | number:'1.1-1') : '0.0' }}</span>
+            <span class="label">Note</span>
+          </div>
+          <div class="stat">
+            <span class="value">{{  0 }}h</span>
+            <span class="label">En ligne</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton de statut en ligne -->
+      <div class="status-button">
+        <ion-button expand="block" class="online-button" *ngIf="!isOnline" (click)="goOnline()">
+          <ion-icon name="power-outline" slot="start"></ion-icon>
+          PASSER EN LIGNE
+        </ion-button>
+        <ion-button expand="block" class="offline-button" *ngIf="isOnline" (click)="goOffline()">
+          <ion-icon name="stop-circle-outline" slot="start"></ion-icon>
+          PASSER HORS LIGNE
+        </ion-button>
+      </div>
+
+      <!-- Section Gains -->
+      <div class="earnings-section">
+        <div class="section-header">
+          <h3>Mes gains</h3>
+          <ion-button fill="clear" size="small" (click)="goToEarnings()">
+            Voir tout
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="earnings-grid">
+          <div class="earning-card">
+            <div class="earning-header">
+              <ion-icon name="sunny-outline" class="icon-today"></ion-icon>
+              <span class="label">Aujourd'hui</span>
+            </div>
+            <span class="amount">{{ earnings.today | currency:'XOF':'symbol':'1.0-0' }}</span>
+            <div class="progress">
+              <div class="progress-bar" [style.width.%]="(earnings.today / 15000) * 100"></div>
+            </div>
+          </div>
+
+          <div class="earning-card">
+            <div class="earning-header">
+              <ion-icon name="calendar-outline" class="icon-week"></ion-icon>
+              <span class="label">Cette semaine</span>
+            </div>
+            <span class="amount">{{ earnings.thisWeek | currency:'XOF':'symbol':'1.0-0' }}</span>
+            <div class="progress">
+              <div class="progress-bar" [style.width.%]="(earnings.thisWeek / 100000) * 100"></div>
+            </div>
+          </div>
+
+          <div class="earning-card">
+            <div class="earning-header">
+              <ion-icon name="calendar-number-outline" class="icon-month"></ion-icon>
+              <span class="label">Ce mois</span>
+            </div>
+            <span class="amount">{{ earnings.thisMonth | currency:'XOF':'symbol':'1.0-0' }}</span>
+            <div class="progress">
+              <div class="progress-bar" [style.width.%]="(earnings.thisMonth / 400000) * 100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses récentes -->
+      <div class="rides-section">
+        <div class="section-header">
+          <h3>Courses récentes</h3>
+          <ion-button fill="clear" size="small" (click)="goToRides()">
+            Voir tout
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="rides-list">
+          <div *ngFor="let ride of recentRides" class="ride-item" (click)="goToRideDetail(ride.id)">
+            <div class="ride-avatar">
+              <img [src]="ride.client?.photo || 'assets/icon/default-avatar.svg'" alt="Client">
+            </div>
+            <div class="ride-info">
+              <h4>{{ ride.client?.name || 'Client' }}</h4>
+              <p class="ride-address">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ ride.adresse_depart | slice:0:20 }}...
+              </p>
+            </div>
+            <div class="ride-meta">
+              <span class="ride-price">{{ ride.prix | currency:'XOF':'symbol':'1.0-0' }}</span>
+              <span class="ride-status" [ngClass]="getRideStatusClass(ride.statut)">
+                {{ getRideStatusText(ride.statut) }}
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="recentRides.length === 0" class="empty-rides">
+            <ion-icon name="car-outline"></ion-icon>
+            <p>Aucune course récente</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ion-content>

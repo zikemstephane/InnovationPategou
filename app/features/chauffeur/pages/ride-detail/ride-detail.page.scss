@@ -1,0 +1,322 @@
+.ride-detail-page {
+  --background: #f9fafb;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    color: #10b981;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: #6b7280;
+  }
+}
+
+.status-banner {
+  padding: 16px 16px 0;
+  
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+.user-info-card {
+  margin: 16px;
+  border-radius: 16px;
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .user-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e5e7eb;
+  }
+  
+  .user-details {
+    flex: 1;
+    
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0 0 4px;
+    }
+    
+    .user-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.9rem;
+      color: #fbbf24;
+      margin-bottom: 4px;
+    }
+    
+    .user-phone {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+  }
+}
+
+.route-card {
+  margin: 16px;
+  border-radius: 16px;
+  
+  .route-points {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .point {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .point-marker {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 1.3rem;
+        
+        &.departure-icon {
+          color: #10b981;
+        }
+        
+        &.arrival-icon {
+          color: #ef4444;
+        }
+      }
+    }
+    
+    .point-address {
+      flex: 1;
+      
+      .point-label {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        margin: 0 0 2px;
+      }
+      
+      .point-value {
+        font-size: 0.95rem;
+        color: #374151;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+  }
+  
+  .route-line {
+    position: absolute;
+    left: 24px;
+    top: 40px;
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, #10b981, #ef4444);
+    z-index: 1;
+  }
+  
+  .route-stats {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    
+    ion-chip {
+      background: #f3f4f6;
+    }
+  }
+}
+
+.details-card {
+  margin: 16px;
+  border-radius: 16px;
+  
+  .payment-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    
+    p {
+      margin: 0;
+    }
+  }
+  
+  .price {
+    color: #10b981;
+    font-weight: 700;
+  }
+  
+  .instructions {
+    font-style: italic;
+    color: #6b7280;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+}
+
+.security-card {
+  margin: 16px;
+  border-radius: 16px;
+  background: #fef3c7;
+  
+  .code-section {
+    text-align: center;
+  }
+  
+  .code-display {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #92400e;
+    letter-spacing: 8px;
+    background: #fff3cd;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .code-hint {
+    font-size: 0.8rem;
+    color: #92400e;
+    margin: 0;
+  }
+}
+
+.action-section {
+  padding: 16px;
+  
+  .start-ride-section, .end-ride-section, .cancel-section {
+    margin-bottom: 12px;
+  }
+  
+  .code-input-item {
+    --background: #ffffff;
+    --border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .action-button {
+    --border-radius: 12px;
+    height: 50px;
+    font-weight: 600;
+    
+    &.start-button {
+      --background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    &.end-button {
+      --background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+  }
+  
+  .cancel-button {
+    --color: #6b7280;
+    --border-color: #e5e7eb;
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: 12px;
+  }
+}
+
+.client-message {
+  padding: 16px;
+  
+  .info-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #eff6ff;
+    border-radius: 12px;
+    padding: 16px;
+    color: #1e40af;
+    
+    ion-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.vehicle-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  .vehicle-icon {
+    background: #f3f4f6;
+    border-radius: 12px;
+    padding: 12px;
+    
+    .vehicle-icon-large {
+      font-size: 2rem;
+      color: #10b981;
+    }
+  }
+  
+  .vehicle-specs {
+    flex: 1;
+    
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0 0 4px;
+    }
+    
+    .vehicle-plate {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4b5563;
+      margin: 0 0 2px;
+    }
+    
+    .vehicle-color {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin: 0;
+    }
+  }
+}

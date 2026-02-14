@@ -1,0 +1,114 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/passenger/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Portefeuille</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadWalletData()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+<ion-content class="payments-page">
+  <!-- Carte Solde du Portefeuille -->
+  <ion-card class="wallet-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="wallet-outline" slot="start"></ion-icon>
+        Mon Solde
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="balance-display">
+        <h1>{{ wallet.solde | currency: wallet.devise }}</h1>
+        <p class="balance-updated">Mis à jour le {{ wallet.derniereMiseAJour | date:'short' }}</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Section des Méthodes de Paiement -->
+  <div class="payment-methods-section">
+    <div class="section-header">
+      <h3>Méthodes de paiement</h3>
+      <ion-button fill="clear" (click)="addPaymentMethod()">
+        <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <ion-list *ngIf="!isLoading && wallet.methodsPaiement.length > 0">
+      <ion-item *ngFor="let method of wallet.methodsPaiement" (click)="setDefaultMethod(method.id)" button>
+        <ion-avatar slot="start">
+          <ion-icon [name]="getMethodIcon(method.type)"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h3>{{ getMethodText(method.type) }}</h3>
+          <p *ngIf="method.type === 'carte_bancaire'">**** {{ method.details.last4Digits }}</p>
+          <p *ngIf="method.type === 'mobile_money'">{{ method.details.accountName }} ({{ method.details.phoneNumber }})</p>
+        </ion-label>
+        <div slot="end">
+          <ion-badge *ngIf="method.isDefault" color="success">Par défaut</ion-badge>
+          <ion-button fill="clear" slot="end" (click)="deleteMethod(method.id); $event.stopPropagation()">
+            <ion-icon name="trash-outline" color="danger"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <!-- État de chargement -->
+    <div class="loading-methods" *ngIf="isLoading">
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+    </div>
+
+    <!-- État vide -->
+    <div class="empty-state" *ngIf="!isLoading && wallet.methodsPaiement.length === 0">
+      <ion-icon name="card-outline"></ion-icon>
+      <h3>Aucune méthode de paiement</h3>
+      <p>Ajoutez une carte ou un compte mobile money pour commencer.</p>
+      <ion-button expand="block" fill="outline" (click)="addPaymentMethod()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Ajouter une méthode
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Section des Transactions Récentes -->
+  <div class="transactions-section">
+    <div class="section-header">
+      <h3>Transactions récentes</h3>
+      <ion-button fill="clear">
+        <ion-icon name="list-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <ion-list>
+      <ion-item *ngFor="let transaction of wallet.transactions.slice(0, 5)">
+        <ion-avatar slot="start">
+          <ion-icon [name]="getMethodIcon(transaction.methode)"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h3>{{ transaction.description || 'Paiement course' }}</h3>
+          <p>{{ transaction.dateTransaction | date:'short' }}</p>
+        </ion-label>
+        <div slot="end" class="transaction-info">
+          <p class="transaction-amount" [class]="getStatusColor(transaction.statut)">
+            {{ transaction.montant | currency: transaction.devise }}
+          </p>
+          <ion-badge [color]="getStatusColor(transaction.statut)">
+            {{ transaction.statut | titlecase }}
+          </ion-badge>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- FAB pour ajouter une méthode (si la liste est vide) -->
+  <ion-fab *ngIf="!isLoading && wallet.methodsPaiement.length === 0" slot="fixed" vertical="bottom" horizontal="end" edge="end">
+    <ion-button (click)="addPaymentMethod()">
+      <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-fab>
+</ion-content>

@@ -1,0 +1,212 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mes Trajets</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFilterModal = true">
+        <ion-icon name="filter-outline"></ion-icon>
+        <ion-badge color="primary" *ngIf="selectedSegment !== 'all' || searchQuery">•</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barre de recherche -->
+  <div class="search-bar">
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Rechercher une adresse..."
+      showCancelButton="focus"
+      (ionCancel)="clearSearch()">
+    </ion-searchbar>
+  </div>
+
+  <!-- Statistiques rapides -->
+  <div class="stats-cards" *ngIf="!isLoading && allTrips.length > 0">
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.completed }}</div>
+      <div class="stat-label">Terminées</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.totalSpent | currency:'XOF':'':'1.0-0' }}</div>
+      <div class="stat-label">Dépensé</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.active }}</div>
+      <div class="stat-label">En cours</div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="trips-content">
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Chargement de vos trajets...</p>
+  </div>
+
+  <!-- Liste des trajets -->
+  <ng-container *ngIf="!isLoading">
+    <!-- Message si aucun trajet -->
+    <div class="empty-state" *ngIf="filteredTrips.length === 0">
+      <div class="empty-icon">
+        <ion-icon name="car-outline"></ion-icon>
+      </div>
+      <h3>Aucun trajet trouvé</h3>
+      <p *ngIf="searchQuery || selectedSegment !== 'all'">
+        Aucun trajet ne correspond à vos critères
+      </p>
+      <p *ngIf="!searchQuery && selectedSegment === 'all'">
+        Vous n'avez pas encore effectué de trajet
+      </p>
+      <ion-button fill="clear" (click)="resetFilters()" *ngIf="searchQuery || selectedSegment !== 'all'">
+        Réinitialiser les filtres
+      </ion-button>
+      <ion-button fill="solid" color="primary" routerLink="/client/create-ride" *ngIf="!searchQuery && selectedSegment === 'all'">
+        Créer une course
+      </ion-button>
+    </div>
+
+    <!-- Trajets groupés par date -->
+    <div class="trips-list" *ngIf="filteredTrips.length > 0">
+      <div *ngFor="let group of groupedTrips" class="date-group">
+        <div class="date-header">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>{{ formatDate(group.date) }}</span>
+          <span class="group-count">{{ group.trips.length }} trajet(s)</span>
+        </div>
+
+        <div class="trip-cards">
+          <ion-card 
+            *ngFor="let trip of group.trips" 
+            class="trip-card"
+            [class]="'status-' + trip.statut"
+            (click)="viewTripDetails(trip.id)">
+            
+            <!-- En-tête de la carte -->
+            <div class="card-header">
+              <div class="driver-info">
+                <ion-avatar class="driver-avatar">
+                  <img [src]="trip.chauffeur?.photo || 'assets/icon/default-avatar.svg'" alt="Chauffeur">
+                </ion-avatar>
+                <div class="driver-details">
+                  <h3>{{ trip.chauffeur?.name || 'Chauffeur' }}</h3>
+                  <div class="driver-rating" *ngIf="trip.chauffeur?.rating">
+                    <ion-icon name="star"></ion-icon>
+                    <span>{{ trip.chauffeur?.rating }}</span>
+                  </div>
+                </div>
+              </div>
+              <ion-badge [color]="getStatusColor(trip.statut)" class="status-badge">
+                <ion-icon [name]="getStatusIcon(trip.statut)" slot="start"></ion-icon>
+                {{ getStatusText(trip.statut) }}
+              </ion-badge>
+            </div>
+
+            <!-- Adresses -->
+            <div class="addresses">
+              <div class="address departure">
+                <ion-icon name="location-outline" class="departure-icon"></ion-icon>
+                <p class="address-text">{{ trip.adresse_depart }}</p>
+              </div>
+              <div class="address arrival">
+                <ion-icon name="flag-outline" class="arrival-icon"></ion-icon>
+                <p class="address-text">{{ trip.adresse_arrivee }}</p>
+              </div>
+            </div>
+
+            <!-- Informations complémentaires -->
+            <div class="trip-info">
+              <div class="info-chip">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ formatTime(trip.date_demande) }}</span>
+              </div>
+              <div class="info-chip" *ngIf="trip.distance_km">
+                <ion-icon name="resize-outline"></ion-icon>
+                <span>{{ trip.distance_km }} km</span>
+              </div>
+              <div class="info-chip">
+                <ion-icon [name]="getVehicleIcon(trip.vehicle?.type_vehicule || 'voiture')"></ion-icon>
+                <span>{{ trip.vehicle?.type_vehicule || 'Voiture' }}</span>
+              </div>
+            </div>
+
+            <!-- Prix et actions -->
+            <div class="card-footer">
+              <div class="price-section">
+                <span class="price">{{ formatPrice(trip.prix) }}</span>
+                <span class="payment-method">{{ getPaymentMethodLabel(trip.methode_paiement) }}</span>
+              </div>
+              
+              <div class="footer-actions">
+                <ion-button 
+                  fill="clear" 
+                  size="small"
+                  (click)="$event.stopPropagation(); showTripOptions(trip)">
+                  <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                </ion-button>
+                <ion-button 
+                  fill="clear" 
+                  size="small"
+                  (click)="$event.stopPropagation(); viewTripDetails(trip.id)">
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- Badge de note si déjà noté -->
+            <div class="rating-badge" *ngIf="trip.client_rating">
+              <ion-icon name="star"></ion-icon>
+              <span>{{ trip.client_rating.note }}/5</span>
+            </div>
+          </ion-card>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Modal de filtres -->
+  <ion-modal [isOpen]="showFilterModal" (didDismiss)="showFilterModal = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Filtrer les trajets</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="showFilterModal = false">Fermer</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="ion-padding">
+        <h3>Statut</h3>
+        <ion-segment [(ngModel)]="selectedSegment" (ionChange)="onSegmentChange($event)">
+          <ion-segment-button value="all">
+            <ion-label>Tous</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="active">
+            <ion-label>En cours</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="completed">
+            <ion-label>Terminés</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="cancelled">
+            <ion-label>Annulés</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <div class="filter-actions">
+          <ion-button expand="block" fill="outline" (click)="resetFilters()">
+            Réinitialiser
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

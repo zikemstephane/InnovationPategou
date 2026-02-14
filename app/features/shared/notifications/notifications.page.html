@@ -1,0 +1,199 @@
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Notifications</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="markAllAsRead()" *ngIf="stats.unread > 0">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="showFilterModal = true">
+        <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barre de statistiques -->
+  <div class="stats-bar" *ngIf="!isLoading">
+    <div class="stat-item" [class.active]="selectedSegment === 'all'" (click)="selectedSegment = 'all'; applyFilter()">
+      <span class="stat-value">{{ stats.total }}</span>
+      <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-item" [class.active]="selectedSegment === 'unread'" (click)="selectedSegment = 'unread'; applyFilter()">
+      <span class="stat-value">{{ stats.unread }}</span>
+      <span class="stat-label">Non lues</span>
+    </div>
+    <div class="stat-item" [class.active]="stats.urgent > 0">
+      <span class="stat-value urgent">{{ stats.urgent }}</span>
+      <span class="stat-label">Urgent</span>
+    </div>
+  </div>
+
+  <!-- Segments de filtres -->
+  <ion-segment [value]="selectedSegment" (ionChange)="onSegmentChange($event)" class="notification-segments">
+    <ion-segment-button value="all">
+      <ion-label>Toutes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="rides">
+      <ion-label>Courses</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="payments">
+      <ion-label>Paiements</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="promos">
+      <ion-label>Promos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+</ion-header>
+
+<ion-content class="notifications-content">
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Chargement des notifications...</p>
+  </div>
+
+  <!-- Liste des notifications -->
+  <ng-container *ngIf="!isLoading">
+    <div class="empty-state" *ngIf="filteredNotifications.length === 0">
+      <div class="empty-icon">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </div>
+      <h3>Aucune notification</h3>
+      <p>Vous n'avez pas encore de notifications</p>
+      <ion-button fill="outline" (click)="goToSettings()">
+        <ion-icon name="settings-outline" slot="start"></ion-icon>
+        Paramètres
+      </ion-button>
+    </div>
+
+    <ion-list class="notifications-list" *ngIf="filteredNotifications.length > 0">
+      <ion-item 
+        *ngFor="let notification of filteredNotifications" 
+        class="notification-item"
+        [class.unread]="!notification.isRead"
+        [class.urgent]="notification.isUrgent"
+        (click)="onNotificationClick(notification)">
+        
+        <ion-avatar slot="start" class="notification-avatar" [ngClass]="getNotificationColor(notification.type)">
+          <ion-icon [name]="getNotificationIcon(notification.type)"></ion-icon>
+        </ion-avatar>
+        
+        <ion-label class="notification-content">
+          <div class="notification-header">
+            <h3>{{ getNotificationTitle(notification.type) }}</h3>
+            <span class="notification-time">{{ getTimeAgo(notification.createdAt) }}</span>
+          </div>
+          <p>{{ notification.message }}</p>
+          
+          <!-- Badges pour les types spécifiques -->
+          <div class="notification-badges" *ngIf="notification.amount">
+            <ion-badge color="success">{{ notification.amount | currency:'XOF':'symbol':'1.0-0' }}</ion-badge>
+          </div>
+          
+          <!-- Indicateur de non-lu -->
+          <div class="unread-indicator" *ngIf="!notification.isRead"></div>
+        </ion-label>
+        
+        <!-- Boutons d'action -->
+        <div class="notification-actions" slot="end">
+          <ion-button 
+            fill="clear" 
+            size="small"
+            (click)="deleteNotification(notification, $event)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button 
+            fill="clear" 
+            size="small"
+            (click)="$event.stopPropagation(); onNotificationClick(notification)">
+            <ion-icon name="arrow-forward-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <!-- Bouton flottant pour nettoyer -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="filteredNotifications.length > 0">
+    <ion-fab-button size="small" color="danger" (click)="clearAll()">
+      <ion-icon name="trash-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Modal de détails -->
+<ion-modal [isOpen]="showDetailModal" (didDismiss)="closeDetailModal()" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+  <ng-template>
+    <ion-header *ngIf="selectedNotification">
+      <ion-toolbar>
+        <ion-title>Détails</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDetailModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding" *ngIf="selectedNotification">
+      <div class="detail-icon" [ngClass]="getNotificationColor(selectedNotification.type)">
+        <ion-icon [name]="getNotificationIcon(selectedNotification.type)"></ion-icon>
+      </div>
+      
+      <h2 class="detail-title">{{ getNotificationTitle(selectedNotification.type) }}</h2>
+      <p class="detail-time">{{ getTimeAgo(selectedNotification.createdAt) }}</p>
+      
+      <div class="detail-message">
+        <p>{{ selectedNotification.message }}</p>
+      </div>
+
+      <div class="detail-actions">
+        <ion-button 
+          *ngIf="selectedNotification.rideId" 
+          expand="block"
+          (click)="navigateToRideDetail(selectedNotification.rideId)">
+          Voir la course
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal de filtre/options -->
+<ion-modal [isOpen]="showFilterModal" (didDismiss)="showFilterModal = false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Options</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="showFilterModal = false">Fermer</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item button (click)="markAllAsRead(); showFilterModal = false">
+          <ion-icon name="checkmark-done-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>Tout marquer comme lu</ion-label>
+        </ion-item>
+        <ion-item button (click)="clearAll(); showFilterModal = false">
+          <ion-icon name="trash-outline" slot="start" color="danger"></ion-icon>
+          <ion-label>Tout supprimer</ion-label>
+        </ion-item>
+        <ion-item button (click)="goToSettings(); showFilterModal = false">
+          <ion-icon name="settings-outline" slot="start" color="medium"></ion-icon>
+          <ion-label>Paramètres</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

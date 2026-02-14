@@ -1,0 +1,366 @@
+// rides.page.scss amélioré
+:host {
+  --primary-color: #10b981;
+  --primary-dark: #059669;
+  --primary-light: #34d399;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --success: #22c55e;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --white: #ffffff;
+}
+
+.rides-page {
+  --background: var(--gray-50);
+}
+
+// Filtres rapides
+.quick-filters {
+  display: flex;
+  overflow-x: auto;
+  padding: 8px 16px;
+  gap: 8px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  scrollbar-width: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  ion-chip {
+    --background: var(--gray-100);
+    --color: var(--gray-600);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+
+    &.active {
+      --background: var(--primary-color);
+      --color: var(--white);
+    }
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+// État de chargement
+.loading-state {
+  padding: 16px;
+}
+
+.skeleton-rides {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-item {
+  height: 180px;
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 16px;
+}
+
+// Groupes de courses
+.ride-group {
+  margin: 16px 16px 24px;
+
+  .group-header {
+    margin-bottom: 12px;
+    
+    span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+.ride-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Carte de course améliorée
+.ride-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  // Couleurs de bordure selon statut
+  &.status-warning {
+    border-left-color: var(--warning);
+  }
+  &.status-primary {
+    border-left-color: var(--info);
+  }
+  &.status-success {
+    border-left-color: var(--success);
+  }
+  &.status-medium {
+    border-left-color: var(--gray-500);
+  }
+  &.status-danger {
+    border-left-color: var(--danger);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+
+  .client-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .client-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .client-details {
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin: 0 0 4px;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+
+      ion-icon {
+        color: #fbbf24;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.trip-details {
+  margin-bottom: 16px;
+
+  .location {
+    position: relative;
+    padding-left: 20px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary-color), var(--danger));
+    }
+  }
+
+  .point {
+    position: relative;
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .dot {
+      position: absolute;
+      left: -20px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      z-index: 1;
+
+      &.departure-dot {
+        background: var(--primary-color);
+        border: 2px solid var(--primary-light);
+      }
+
+      &.arrival-dot {
+        background: var(--danger);
+        border: 2px solid #fee2e2;
+      }
+    }
+
+    .address {
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  .distance {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    padding: 6px 12px;
+    border-radius: 20px;
+    width: fit-content;
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-100);
+
+  .footer-left {
+    display: flex;
+    gap: 12px;
+  }
+
+  .time, .price {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+
+    ion-icon {
+      font-size: 0.9rem;
+      color: var(--primary-color);
+    }
+  }
+
+  .footer-right {
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+
+      ion-button {
+        --border-radius: 8px;
+        font-size: 0.8rem;
+        height: 32px;
+      }
+    }
+  }
+}
+
+// État vide amélioré
+.empty-state-enhanced {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 24px;
+  text-align: center;
+
+  .empty-illustration {
+    margin-bottom: 24px;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: var(--gray-500);
+    margin: 0 0 24px;
+    max-width: 280px;
+  }
+
+  .empty-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 280px;
+
+    ion-button {
+      margin: 0;
+    }
+  }
+}
+
+// FAB amélioré
+ion-fab-button {
+  --background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  --box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  width: 56px;
+  height: 56px;
+}
+
+// Animations
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Responsive
+@media (max-width: 380px) {
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    .footer-right {
+      width: 100%;
+
+      .action-buttons {
+        width: 100%;
+
+        ion-button {
+          flex: 1;
+        }
+      }
+    }
+  }
+}

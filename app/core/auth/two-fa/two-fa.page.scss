@@ -1,0 +1,178 @@
+:root {
+  --moov-primary: #10b981;
+  --moov-primary-dark: #059669;
+  --moov-primary-light: #34d399;
+  --moov-white: #ffffff;
+  --moov-gray-50: #f9fafb;
+  --moov-gray-100: #f3f4f6;
+  --moov-gray-200: #e5e7eb;
+  --moov-gray-300: #d1d5db;
+  --moov-gray-400: #9ca3af;
+  --moov-gray-500: #6b7280;
+  --moov-gray-600: #4b5563;
+  --moov-gray-700: #374151;
+  --moov-gray-800: #1f2937;
+  --moov-gray-900: #111827;
+}
+
+.twofa-container {
+  --background: var(--moov-white);
+}
+
+.twofa-content {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  min-height: 100%;
+}
+
+.illustration-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.illustration-circle {
+  width: 100px;
+  height: 100px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.illustration-icon {
+  font-size: 3rem;
+  color: var(--moov-primary);
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--moov-gray-800);
+  margin: 0 0 0.5rem 0;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: var(--moov-gray-600);
+  margin: 0;
+  max-width: 80%;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.code-input {
+  --background: #f9fafb;
+  --border-radius: 12px;
+  --border-color: #e5e7eb;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  width: 45px;
+  height: 55px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--moov-gray-800);
+  
+  &.item-has-focus {
+    --border-color: #10b981;
+    --background: #ffffff;
+  }
+  
+  &.ng-invalid.ng-touched {
+    --border-color: var(--ion-color-danger);
+  }
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.verify-button {
+  --background: #10b981;
+  --color: #ffffff;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  font-weight: 600;
+  height: 54px;
+  
+  &:hover {
+    --box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+  
+  &:disabled {
+    --opacity: 0.6;
+  }
+}
+
+.options-section {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.resend-code {
+  text-align: center;
+  
+  p {
+    color: var(--moov-gray-600);
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  
+  ion-button {
+    font-weight: 600;
+    font-size: 0.9rem;
+    
+    &:disabled {
+      --color: var(--moov-gray-400);
+    }
+  }
+}
+
+/* Responsive pour mobile */
+@media (max-width: 480px) {
+  .twofa-content {
+    padding: 1.5rem 1rem;
+  }
+  
+  .illustration-circle {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .illustration-icon {
+    font-size: 2.5rem;
+  }
+  
+  .page-title {
+    font-size: 1.6rem;
+  }
+  
+  .code-input {
+    width: 40px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+  
+  .verify-button {
+    height: 48px;
+  }
+}

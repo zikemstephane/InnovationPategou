@@ -1,0 +1,125 @@
+<!-- rate-ride.page.html -->
+<ion-header [translucent]="false">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Noter votre course</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="rate-ride-content">
+  <div class="rating-container" *ngIf="!isSubmitted">
+    <!-- En-tête avec infos chauffeur -->
+    <div class="driver-header">
+      <div class="driver-avatar">
+        <img [src]="driver?.photo || 'assets/icon/default-avatar.svg'" alt="Chauffeur">
+      </div>
+      <div class="driver-info">
+        <h2>{{ driver?.name || 'Chauffeur' }}</h2>
+        <p>Comment s'est passée votre course ?</p>
+      </div>
+    </div>
+
+    <!-- Note globale (étoiles) -->
+    <div class="rating-section">
+      <h3>Note globale</h3>
+      <div class="stars-container">
+        <ion-icon
+          *ngFor="let star of [1,2,3,4,5]"
+          [name]="star <= rating ? 'star' : 'star-outline'"
+          (click)="setRating(star)"
+          class="star-icon"
+          [class.active]="star <= rating">
+        </ion-icon>
+      </div>
+      <div class="rating-label">{{ getRatingLabel(rating) }}</div>
+    </div>
+
+    <!-- Critères détaillés (optionnel) -->
+    <div class="criteria-section">
+      <h3>Critères détaillés</h3>
+      
+      <div class="criterion">
+        <span class="criterion-label">Ponctualité</span>
+        <div class="criterion-stars">
+          <ion-icon
+            *ngFor="let star of [1,2,3,4,5]"
+            [name]="star <= criteria.punctuality ? 'star' : 'star-outline'"
+            (click)="setCriterion('punctuality', star)"
+            class="small-star">
+          </ion-icon>
+        </div>
+      </div>
+
+      <div class="criterion">
+        <span class="criterion-label">Conduite</span>
+        <div class="criterion-stars">
+          <ion-icon
+            *ngFor="let star of [1,2,3,4,5]"
+            [name]="star <= criteria.driving ? 'star' : 'star-outline'"
+            (click)="setCriterion('driving', star)"
+            class="small-star">
+          </ion-icon>
+        </div>
+      </div>
+
+      <div class="criterion">
+        <span class="criterion-label">Propreté</span>
+        <div class="criterion-stars">
+          <ion-icon
+            *ngFor="let star of [1,2,3,4,5]"
+            [name]="star <= criteria.cleanliness ? 'star' : 'star-outline'"
+            (click)="setCriterion('cleanliness', star)"
+            class="small-star">
+          </ion-icon>
+        </div>
+      </div>
+
+      <div class="criterion">
+        <span class="criterion-label">Professionnalisme</span>
+        <div class="criterion-stars">
+          <ion-icon
+            *ngFor="let star of [1,2,3,4,5]"
+            [name]="star <= criteria.professionalism ? 'star' : 'star-outline'"
+            (click)="setCriterion('professionalism', star)"
+            class="small-star">
+          </ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commentaire -->
+    <div class="comment-section">
+      <h3>Commentaire (optionnel)</h3>
+      <ion-textarea
+        [(ngModel)]="comment"
+        placeholder="Partagez votre expérience..."
+        rows="4"
+        class="comment-input">
+      </ion-textarea>
+    </div>
+
+    <!-- Bouton de soumission -->
+    <ion-button
+      expand="block"
+      class="submit-button"
+      (click)="submitRating()"
+      [disabled]="isSubmitting">
+      <ion-spinner *ngIf="isSubmitting" slot="start"></ion-spinner>
+      {{ isSubmitting ? 'Envoi en cours...' : 'Noter cette course' }}
+    </ion-button>
+  </div>
+
+  <!-- Écran de remerciement -->
+  <div class="thank-you-container" *ngIf="isSubmitted">
+    <div class="checkmark-circle">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+    </div>
+    <h2>Merci !</h2>
+    <p>Votre avis nous aide à améliorer nos services.</p>
+    <ion-button fill="clear" (click)="goToHome()">
+      Retour à l'accueil
+    </ion-button>
+  </div>
+</ion-content>

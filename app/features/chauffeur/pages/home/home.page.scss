@@ -1,0 +1,609 @@
+// home.page.scss
+// Variables de couleur (cohérentes avec votre thème)
+:host {
+  --primary-color: #10b981;
+  --primary-dark: #059669;
+  --primary-light: #34d399;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --success: #22c55e;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --white: #ffffff;
+}
+
+.driver-home {
+  --background: var(--gray-50);
+  position: relative;
+
+  &.has-expanded-notifications {
+    .main-content {
+      filter: blur(4px);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
+// ====================
+// PANEL NOTIFICATIONS
+// ====================
+.notification-panel {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  max-height: 70vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &.expanded {
+    transform: translateY(0);
+  }
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+  }
+
+  ion-button {
+    --color: var(--primary-color);
+    font-size: 0.85rem;
+  }
+}
+
+.notification-list {
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 8px 0;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 20px;
+  gap: 12px;
+  border-bottom: 1px solid var(--gray-100);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--gray-50);
+  }
+
+  &.urgent {
+    background-color: #fef2f2;
+    border-left: 3px solid var(--danger);
+  }
+}
+
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 1.2rem;
+    color: var(--white);
+  }
+
+  &.icon-success {
+    background-color: var(--success);
+  }
+  &.icon-error {
+    background-color: var(--danger);
+  }
+  &.icon-info {
+    background-color: var(--info);
+  }
+  &.icon-warning {
+    background-color: var(--warning);
+  }
+}
+
+.notification-content {
+  flex: 1;
+
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+  }
+
+  .time {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+  }
+}
+
+.empty-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: var(--gray-400);
+
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+}
+
+.notification-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--gray-200);
+
+  ion-button {
+    --color: var(--primary-color);
+  }
+}
+
+// ====================
+// CONTENU PRINCIPAL
+// ====================
+.main-content {
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  padding: 16px;
+}
+
+// Carte Profil
+.profile-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.profile-avatar {
+  position: relative;
+  width: 70px;
+  height: 70px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--white);
+  }
+
+  .online-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    
+    &.online {
+      background-color: var(--success);
+    }
+    &.offline {
+      background-color: var(--gray-400);
+    }
+  }
+}
+
+.profile-info {
+  flex: 1;
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0 0 4px 0;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+    margin: 0;
+
+    ion-icon {
+      font-size: 0.8rem;
+    }
+
+    &.online {
+      color: var(--white);
+    }
+    &.offline {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+.edit-button {
+  --color: var(--white);
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.stat {
+  text-align: center;
+
+  .value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 4px;
+  }
+}
+
+// Bouton de statut
+.status-button {
+  margin-bottom: 24px;
+
+  ion-button {
+    height: 50px;
+    --border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .online-button {
+    --background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    --box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+  }
+
+  .offline-button {
+    --background: linear-gradient(135deg, var(--danger), #b91c1c);
+    --box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
+  }
+}
+
+// Section gains
+.earnings-section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+  }
+
+  ion-button {
+    --color: var(--primary-color);
+    font-size: 0.85rem;
+  }
+}
+
+.earnings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.earning-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.earning-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+
+  ion-icon {
+    font-size: 1rem;
+  }
+
+  .label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--gray-500);
+  }
+
+  .icon-today {
+    color: var(--warning);
+  }
+  .icon-week {
+    color: var(--info);
+  }
+  .icon-month {
+    color: var(--primary-color);
+  }
+}
+
+.amount {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
+
+.progress {
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+}
+
+// Courses récentes
+.rides-section {
+  margin-bottom: 16px;
+}
+
+.rides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ride-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.ride-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.ride-info {
+  flex: 1;
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0 0 4px 0;
+  }
+
+  .ride-address {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin: 0;
+
+    ion-icon {
+      font-size: 0.9rem;
+      color: var(--primary-color);
+    }
+  }
+}
+
+.ride-meta {
+  text-align: right;
+
+  .ride-price {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+  }
+
+  .ride-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+
+    &.status-completed {
+      background-color: #f0fdf4;
+      color: var(--success);
+    }
+    &.status-cancelled {
+      background-color: #fef2f2;
+      color: var(--danger);
+    }
+    &.status-pending {
+      background-color: #eff6ff;
+      color: var(--info);
+    }
+  }
+}
+
+.empty-rides {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  background: var(--white);
+  border-radius: 16px;
+  color: var(--gray-400);
+
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+}
+
+// ====================
+// SKELETON LOADING
+// ====================
+.loading-skeleton {
+  padding: 16px;
+}
+
+.skeleton-profile {
+  height: 120px;
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 24px;
+  margin-bottom: 20px;
+}
+
+.skeleton-earnings {
+  height: 80px;
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.skeleton-rides {
+  height: 200px;
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 16px;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Notification bell
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--gray-700);
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--danger);
+    color: var(--white);
+    font-size: 0.7rem;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--white);
+  }
+}
+
+// Responsive
+@media (max-width: 360px) {
+  .earnings-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .profile-stats {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .stat {
+    flex: 1;
+    min-width: 80px;
+  }
+}
