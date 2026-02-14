@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 import os
 
 
@@ -120,11 +121,20 @@ WSGI_APPLICATION = 'pategou.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
+# Configuration de la Base de Données (Dynamique : Render ou Local)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Si l'env var DATABASE_URL n'existe pas (sur votre PC), on utilise SQLite
+        default='sqlite:///db.sqlite3', 
+        conn_max_age=600,
+        conn_health_checks=True
+    )
 }
 
 
