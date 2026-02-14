@@ -1,11 +1,13 @@
 from rest_framework import serializers
-from django.core.mail import send_mail
-from .models import Utilisateur, OTPCode
-from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
-from .models import Utilisateur, OTPCode
 from rest_framework_simplejwt.tokens import RefreshToken
 import random
+
+# Importations de vos modèles
+from .models import Utilisateur, OTPCode
+# Importation de la fonction utilitaire créée dans le fichier utils.py
+from .utils import envoyer_code_otp_asynchrone
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     motdepasse = serializers.CharField(write_only=True, required=True, validators=[validate_password])
@@ -37,6 +39,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     motdepasse = serializers.CharField(write_only=True)
@@ -64,33 +67,16 @@ class LoginSerializer(serializers.Serializer):
             defaults={'code': code}
         )
         
-        # TODO: Ici, vous ajouteriez la logique d'envoi d'email réel
-        # Exemple: send_mail(user.email, code)
-        try:
-            send_mail(
-                subject="Code de vérification pour votre connexion",
-                message=f"""
-                Bonjour {user.prenom},
+        # ENVOI EMAIL ASYNCHRONE (Correction du Timeout)
+        # L'email part en arrière-plan, la réponse est immédiate pour l'utilisateur
+        envoyer_code_otp_asynchrone(user.email, user.prenom, code)
 
-                Votre code de connexion est : {code}
-
-                Ce code est valide pendant 10 minutes.
-                """,
-                from_email="no-reply@monapp.com",
-                recipient_list=[user.email],
-                fail_silently=False, # Peu importe la valeur ici, le try/except gère l'erreur
-            )
-        except Exception as e:
-            # Si l'envoi échoue (Timeout, Render bloque, etc.), on ignore l'erreur
-            # On log juste l'erreur pour voir ce qui se passe
-            print(f"ERREUR EMAIL (Ignorée pour ne pas planter l'app) : {e}")
-        # === FIN DU BLOC DE SÉCURITÉ ===
-
-        # On affiche le code dans la console (logs) pour que vous puissiez le copier
-        print(f"--- CODE OTP POUR {user.email} : {code} ---")
+        # DEBUG : Affichage dans la console Render (Logs)
+        print(f"--- SIMULATION / DEBUG --- Pour {user.email}, votre code est : {code}")
 
         attrs['user'] = user
         return attrs
+
 
 class VerifyOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -104,7 +90,9 @@ class VerifyOTPSerializer(serializers.Serializer):
             user = Utilisateur.objects.filter(email=email).first()
             if not user:
                 raise serializers.ValidationError("Utilisateur non trouvé.")    
+            
             print(f"--- DEBUG --- Vérification OTP pour {user.email} avec code {code}")
+            
             otp = OTPCode.objects.get(user=user, code=code)
         except OTPCode.DoesNotExist:
             raise serializers.ValidationError("Code de vérification invalide.")
@@ -118,12 +106,13 @@ class VerifyOTPSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         user = validated_data['user']
+        
         # Supprimer le code utilisé pour qu'il ne soit pas réutilisé
         OTPCode.objects.filter(user=user).delete()
         
         # Génération des tokens JWT
         refresh = RefreshToken.for_user(user)
-        print(f"--- DEBUG --- Génération JWT pour {user.email} : refresh={refresh}, access={refresh.access_token}")
+        
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -146,12 +135,3 @@ class UtilisateurSerializer(serializers.ModelSerializer):
         model = Utilisateur
         fields = ('id', 'email', 'nom', 'prenom', 'telephone', 'role', 'photo', 'date_creation')
         read_only_fields = ('id', 'email', 'role', 'date_creation')
-# ... à la fin de votre fichier serializers.py ...
-
-
-
-    
-    
-    
-    
-    
