@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'vehicule',
     'course',
     'Avis',
+    'notification',
     'dashboard',
 ]
 
@@ -185,6 +186,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'zikemstephane@gmail.com'
 EMAIL_HOST_PASSWORD = 'znghyeokurdjdrea'
+EMAIL_TIMEOUT = 20
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

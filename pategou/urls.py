@@ -23,6 +23,8 @@ urlpatterns = [
     path('api/vehicules/', include('vehicule.urls')),
     path('api/courses/', include('course.urls')),
     path('api/avis/', include('Avis.urls')),
-    path('api/dashboard/', include('dashboard.urls')),  # Ajoutez cette ligne pour inclure les URLs du dashboard
+    path('api/dashboard/', include('dashboard.urls')), 
+    path('', include('notification.urls')), 
+    # Ajoutez cette ligne pour inclure les URLs du dashboard
 
 ]
