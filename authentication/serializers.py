@@ -66,32 +66,28 @@ class LoginSerializer(serializers.Serializer):
         
         # TODO: Ici, vous ajouteriez la logique d'envoi d'email réel
         # Exemple: send_mail(user.email, code)
-        send_mail(
-    # SUJET : Indiquer clairement que c'est pour la connexion
-    subject="Code de vérification pour votre connexion",
-    
-    # MESSAGE : Expliciter la démarche
-    message=f"""
-    Bonjour {user.prenom},
+        try:
+            send_mail(
+                subject="Code de vérification pour votre connexion",
+                message=f"""
+                Bonjour {user.prenom},
 
-    Nous avons reçu une demande de connexion à votre compte.
-    Pour continuer et valider votre identité, veuillez entrer le code de sécurité ci-dessous :
+                Votre code de connexion est : {code}
 
-    {code}
+                Ce code est valide pendant 10 minutes.
+                """,
+                from_email="no-reply@monapp.com",
+                recipient_list=[user.email],
+                fail_silently=False, # Peu importe la valeur ici, le try/except gère l'erreur
+            )
+        except Exception as e:
+            # Si l'envoi échoue (Timeout, Render bloque, etc.), on ignore l'erreur
+            # On log juste l'erreur pour voir ce qui se passe
+            print(f"ERREUR EMAIL (Ignorée pour ne pas planter l'app) : {e}")
+        # === FIN DU BLOC DE SÉCURITÉ ===
 
-    Ce code est valide pendant 10 minutes.
-
-    Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.
-
-    Cordialement,
-    L'équipe de Pategou
-    """,
-    
-    from_email="no-reply@monapp.com",
-    recipient_list=[user.email],
-    fail_silently=True, # Mettez True en production pour ne pas planter si l'email échoue
-)
-        print(f"--- SIMULATION EMAIL --- Pour {user.email}, votre code est : {code}")
+        # On affiche le code dans la console (logs) pour que vous puissiez le copier
+        print(f"--- CODE OTP POUR {user.email} : {code} ---")
 
         attrs['user'] = user
         return attrs
