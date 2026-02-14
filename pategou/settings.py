@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'vehicule',
     'course',
     'Avis',
+    'dashboard',
 ]
 
 AUTH_USER_MODEL = 'authentication.Utilisateur'
@@ -61,6 +62,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+PUBLIC_URLS = [
+    r'^/login/$',
+    r'^/register/$',
+    r'^/admin/',
+]
+
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -70,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    #'authentication.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'pategou.urls'

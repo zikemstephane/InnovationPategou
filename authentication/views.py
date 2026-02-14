@@ -1,4 +1,10 @@
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from django.db.models import Sum, Count, Q
+from course.models import Course
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -72,3 +78,10 @@ def profile_view(request):
         user.delete()
         # Le code 204 No Content signifie que la suppression a réussi mais qu'il n'y a rien à retourner
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+    
+
+# ===========================
+# 1. Vue Récapitulatif (Dashboard)
+# ===========================

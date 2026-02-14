@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils import timezone
 
-# ===========================
-# Manager personnalisé
-# ===========================
 class UtilisateurManager(BaseUserManager):
     use_in_migrations = True
 

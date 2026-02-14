@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.core.mail import send_mail
-
+from .models import Utilisateur, OTPCode
+from course.models import Course
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from .models import Utilisateur, OTPCode
@@ -141,8 +142,6 @@ class VerifyOTPSerializer(serializers.Serializer):
         }
         
         
-# ... à la fin de votre fichier serializers.py ...
-
 class UtilisateurSerializer(serializers.ModelSerializer):
     """
     Serializer pour afficher et modifier le profil.
@@ -152,3 +151,12 @@ class UtilisateurSerializer(serializers.ModelSerializer):
         model = Utilisateur
         fields = ('id', 'email', 'nom', 'prenom', 'telephone', 'role', 'photo', 'date_creation')
         read_only_fields = ('id', 'email', 'role', 'date_creation')
+# ... à la fin de votre fichier serializers.py ...
+
+
+
+    
+    
+    
+    
+    
