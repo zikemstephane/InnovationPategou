@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.core.mail import send_mail
 from .models import Utilisateur, OTPCode
-from course.models import Course
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from .models import Utilisateur, OTPCode
@@ -90,7 +89,7 @@ class LoginSerializer(serializers.Serializer):
     
     from_email="no-reply@monapp.com",
     recipient_list=[user.email],
-    fail_silently=False, # Mettez True en production pour ne pas planter si l'email échoue
+    fail_silently=True, # Mettez True en production pour ne pas planter si l'email échoue
 )
         print(f"--- SIMULATION EMAIL --- Pour {user.email}, votre code est : {code}")
 
