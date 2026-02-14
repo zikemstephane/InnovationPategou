@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.db.models import Q
-
+from authentication.permissions import IsAdminRole
 from authentication.models import Utilisateur
 from course.models import Course
 from .models import NotificationAdmin
@@ -30,7 +30,7 @@ def envoi_notification_thread(titre, message, destinataires):
 
 # --- VIEWSET GESTION CHAUFFEURS ---
 class DriverManagementViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminRole] 
     serializer_class = DriverManageSerializer
     # On ne voit que les chauffeurs
     queryset = Utilisateur.objects.filter(role='chauffeur').order_by('-date_creation')
@@ -53,7 +53,7 @@ class DriverManagementViewSet(viewsets.ModelViewSet):
 
 # --- VIEWSET GESTION COURSES (Admin) ---
 class CourseManagementViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminRole] 
     serializer_class = CourseAdminSerializer
     queryset = Course.objects.all().select_related('client', 'chauffeur').order_by('-date_demande')
 
@@ -66,7 +66,7 @@ class CourseManagementViewSet(viewsets.ModelViewSet):
 
 # --- VIEWSET NOTIFICATIONS & EXPORT ---
 class AdminToolsViewSet(viewsets.ViewSet):
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminRole] 
 
     # 1. EXPORT CSV
     @action(detail=False, methods=['get'])
