@@ -28,7 +28,12 @@ SECRET_KEY = 'django-insecure-q4ai75ugk#&_d6+k=zmzqvd$g^qbft2mnb(+ki$sok=gi1oq7r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = [
+    'innovationpategou.onrender.com',  # <--- Ajoutez votre URL Render ici
+    'localhost', 
+    '127.0.0.1'
+]
 
 
 # Application definition
