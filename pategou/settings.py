@@ -79,12 +79,12 @@ PUBLIC_URLS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+        
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     #'authentication.middleware.LoginRequiredMiddleware',
 ]
@@ -105,6 +105,13 @@ TEMPLATES = [
         },
     },
 ]
+
+# Autorisez votre frontend local (port 8100)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://localhost:8100",
+]
+
 
 WSGI_APPLICATION = 'pategou.wsgi.application'
 
